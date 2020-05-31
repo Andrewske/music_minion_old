@@ -8,7 +8,7 @@ app.get('/', (req, res) => res.send('API Running'));
 const PORT = process.env.PORT || 5000;
 
 //MIDDLEWARE//
-app.use(express.json());
+app.use(express.json({ extended: false }));
 
 //DEFINE ROUTES//
 app.use('/api/users', require('./routes/api/users'));

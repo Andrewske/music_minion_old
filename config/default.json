@@ -1,4 +1,5 @@
 {
   "db_username": "postgres",
-  "db_password": "L1velove"
+  "db_password": "L1velove",
+  "jwtSecret": "musicislife"
 }
