@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const CLIENT_GOOGLE_AUTH_URL = 'http://localhost:3000/auth/google/login';
+const CLIENT_AUTH_URL = 'http://localhost:3000/auth/login?';
 
 // @route   GET api/auth
 // @desc    Test route
@@ -89,6 +89,8 @@ router.get(
   '/google',
   passport.authenticate('google', {
     scope: ['profile', 'email'],
+    accessType: 'offline',
+    prompt: 'consent',
   })
 );
 
@@ -126,20 +128,72 @@ router.get('/google/failed', (req, res) => {
 router.get(
   '/google/redirect',
   passport.authenticate('google', {
-    successRedirect: CLIENT_GOOGLE_AUTH_URL,
+    successRedirect: CLIENT_AUTH_URL + 'platform=google',
     failureRedirect: '/auth/login/failed',
   })
 );
 
-// Authentication with Google
-// router.get('/google', (req, res) => {
-//   console.log('logging in with Spotify');
-//   res.send('success!');
-// });
+//Authentication with Spotify
+router.get(
+  '/spotify',
+  passport.authenticate('spotify', {
+    scope: [
+      'user-read-playback-state',
+      'user-modify-playback-state',
+      'user-read-currently-playing',
+      'streaming',
+      'user-read-email',
+      'user-read-private',
+      'playlist-read-private',
+      'playlist-modify-public',
+      'playlist-modify-private',
+      'user-library-modify',
+      'user-library-read',
+      'user-top-read',
+      'user-read-recently-played',
+      'user-follow-read',
+      'user-follow-modify',
+    ],
+  })
+);
 
-// // Authentication with Google
-// router.get('/spotify', (req, res) => {
-//   console.log('logging in with Spotify');
-// });
+router.get('/spotify/success', (req, res) => {
+  console.log('Success Route');
+  console.log(req.user);
+  if (req.user) {
+    const payload = {
+      user: {
+        id: req.user.user_id,
+      },
+    };
+
+    jwt.sign(
+      payload,
+      config.get('jwtSecret'),
+      { expiresIn: 360000 },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
+  } else {
+    res.send('No User');
+  }
+});
+
+router.get('/spotify/failed', (req, res) => {
+  res.status(401).json({
+    success: false,
+    message: 'user has failed to authenticate with Spotify',
+  });
+});
+
+router.get(
+  '/spotify/redirect',
+  passport.authenticate('spotify', {
+    successRedirect: CLIENT_AUTH_URL + 'platform=spotify',
+    failureRedirect: '/auth/login/failed',
+  })
+);
 
 module.exports = router;

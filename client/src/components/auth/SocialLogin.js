@@ -1,36 +1,26 @@
-import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { registerGoogle } from '../../actions/auth';
+import PropTypes from 'prop-types';
+import { registerSocial } from '../../actions/auth';
 
-const SocialLogin = ({ registerGoogle }) => {
-  const onClick = (e) => {
-    e.preventDefault();
-    console.log('Register Google');
-    registerGoogle();
-  };
+const SocialLogin = ({ registerSocial }) => {
+  const url = new URL(window.location.href);
+  const platform = url.searchParams.get('platform');
 
-  return (
-    <Fragment>
-      <button className='btn btn-spotify' onClick={(e) => onClick(e)}>
-        <i className='fa fa-spotify mr-1'></i> Log In with Spotify
-      </button>
-      {/* <button className='btn btn-google' onClick={(e) => onClick(e)}>
-        <i className='fab fa-google mr-1'></i> Log in with Google
-      </button> */}
-      <a
-        href='http://localhost:5000/api/auth/google'
-        className='btn btn-google'
-      >
-        <i className='fab fa-google mr-1'></i> Log in with Google
-      </a>
-    </Fragment>
-  );
+  useEffect(() => {
+    try {
+      registerSocial(platform);
+    } catch (err) {
+      console.err(err.message);
+    }
+  }, []);
+
+  return <Redirect to={'/'} />;
 };
 
 SocialLogin.propTypes = {
-  registerGoogle: PropTypes.func.isRequired,
+  registerSocial: PropTypes.func.isRequired,
 };
 
-export default connect(null, { registerGoogle })(SocialLogin);
+export default connect(null, { registerSocial })(SocialLogin);

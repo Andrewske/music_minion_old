@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { login } from '../../actions/auth';
 import { Link, Redirect } from 'react-router-dom';
-import SocialLogin from './SocialLogin';
+import SocialLoginButtons from './SocialLoginButtons';
 
 const Login = ({ login, isAuthenticated }) => {
   const [formData, setFormData] = useState({
@@ -56,7 +56,7 @@ const Login = ({ login, isAuthenticated }) => {
         </div>
         <input type='submit' className='btn btn-primary' value='Login' />
       </form>
-      <SocialLogin />
+      <SocialLoginButtons />
       <p className='my-1'>
         Don't have an account? <Link to='/Register'>Sign Up</Link>
       </p>

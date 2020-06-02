@@ -67,12 +67,12 @@ export const register = ({ name, email, password }) => async (dispatch) => {
   }
 };
 
-// Register through Google
-export const registerGoogle = () => async (dispatch) => {
+// Register through a social Platform
+export const registerSocial = (platform) => async (dispatch) => {
   try {
     console.log('trying to fetch the user');
 
-    const res = await axios.get('/api/auth/google/success');
+    const res = await axios.get(`/api/auth/${platform}/success`);
     console.log(res);
     dispatch({
       type: REGISTER_SUCCESS,
