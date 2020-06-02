@@ -14,7 +14,7 @@
 }
 
 body {
-  font-family: 'Raleway', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 1rem;
   line-height: 1.6;
   background-color: #fff;
@@ -574,4 +574,20 @@ button {
   .post button {
     padding: 0.3rem 0.4rem;
   }
+}
+
+/* Spotify */
+
+.btn-spotify {
+  background-color: #1db954;
+  color: white;
+  margin-top: 10px;
+}
+
+/* Google */
+
+.btn-google {
+  background-color: #4285f4;
+  color: white;
+  margin-top: 10px;
 }

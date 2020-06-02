@@ -54,7 +54,9 @@ router.post(
     } catch (err) {
       console.log(err.message);
       if (err.constraint === 'users_email_key') {
-        return res.status(500).send('Email Already Taken');
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'User already exists' }] });
       } else {
         res.status(500).send('Server Error');
       }
