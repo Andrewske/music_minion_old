@@ -125,7 +125,7 @@ const addTokens = async (
 
     if (userToken.rows.length > 0) {
       userToken = await pool.query(
-        'UPDATE user_token SET access_token = $1, refresh_token = $2, expires_in = $3 WHERE user_id = $4 and platform = $5',
+        'UPDATE user_token SET access_token = $1, refresh_token = $2, expires_in = $3, updated_at = NOW() WHERE user_id = $4 and platform = $5',
         [accessToken, refreshToken, expires_in, user_id, platform]
       );
     } else {

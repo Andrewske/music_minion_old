@@ -14,14 +14,12 @@ const CLIENT_AUTH_URL = 'http://localhost:3000/auth/login?';
 // @access  Public
 router.get('/', auth, async (req, res) => {
   try {
-    console.log('Get API/AUTH');
-    console.log(req.user);
     const user = await pool.query('SELECT * FROM users WHERE user_id = $1', [
       req.user.id,
     ]);
 
     delete user.rows[0].password;
-    console.log(user.rows[0]);
+
     res.json(user.rows[0]);
   } catch (err) {
     console.error(err.message);
@@ -84,6 +82,15 @@ router.post(
   }
 );
 
+// @route   GET api/auth/logout
+// @desc    Logout Route
+// @access  Public
+
+router.get('/logout', (req, res) => {
+  req.logout();
+  res.send('User Logged Out');
+});
+
 //Authentication with Google
 router.get(
   '/google',
@@ -95,8 +102,6 @@ router.get(
 );
 
 router.get('/google/success', (req, res) => {
-  console.log('Success Route');
-  console.log(req.user);
   if (req.user) {
     const payload = {
       user: {
@@ -158,8 +163,6 @@ router.get(
 );
 
 router.get('/spotify/success', (req, res) => {
-  console.log('Success Route');
-  console.log(req.user);
   if (req.user) {
     const payload = {
       user: {

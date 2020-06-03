@@ -124,6 +124,8 @@ export const login = (email, password) => async (dispatch) => {
 };
 
 // Logout
-export const logout = () => (dispatch) => {
+export const logout = () => async (dispatch) => {
+  const res = await axios.get('/api/auth/logout');
+  console.log(res);
   dispatch({ type: LOGOUT });
 };
