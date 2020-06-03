@@ -4,9 +4,10 @@ const router = express.Router();
 
 const auth = require('../../middleware/auth');
 const spotify = require('../../components/spotify');
+const tags = require('../../components/tags');
 const pool = require('../../config/db');
 
-//Model Imports
+// Model Imports
 const { getUser } = require('../../models/users');
 const {
   getPlaylist,
@@ -20,12 +21,15 @@ const {
 } = require('../../models/user_playlist');
 const { getTrack, addTrack, updateTrack } = require('../../models/track');
 const { getUserTrack, addUserTrack } = require('../../models/user_track');
-const { getArtist, addArtist } = require('../../models/artist');
+const { getUserArtist, addUserArtist } = require('../../models/user_artist');
+const { getArtist, addArtist, updateArtist } = require('../../models/artist');
 const { getArtistTrack, addArtistTrack } = require('../../models/artist_track');
 const {
   getPlaylistTrack,
   addPlaylistTrack,
 } = require('../../models/playlist_track');
+
+// ROUTES
 
 // @route   GET api/spotify/import/playlists
 // @desc    Import all the users playlists into the DB
@@ -46,7 +50,7 @@ router.get('/import/playlist/all', auth, async (req, res) => {
         const data = {
           playlist_id: playlist.id,
           name: playlist.name,
-          owner: playlist.owner.id,
+          owner: playlist.owner.id == spotify_id,
           img_url: playlist.images.length > 0 ? playlist.images[0].url : null,
           size: playlist.tracks.total,
           platform: 'spotify',
@@ -57,7 +61,7 @@ router.get('/import/playlist/all', auth, async (req, res) => {
 
         let userPlaylist =
           (await getUserPlaylist(user_id, data.playlist_id)) ||
-          (await addUserPlaylist(user_id, data.playlist_id));
+          (await addUserPlaylist(user_id, data.playlist_id, data.owner));
 
         return { newPlaylist, userPlaylist };
       })
@@ -137,7 +141,10 @@ router.get('/import/playlist/track/all', auth, async (req, res) => {
             let artistTrack =
               (await getArtistTrack(artist_id, track_id)) ||
               (await addArtistTrack(artist_id, track_id));
-            return { artist, artistTrack };
+            let userArtist =
+              (await getUserArtist(user_id, artist_id)) ||
+              (await addUserArtist(user_id, artist_id));
+            return { artist, artistTrack, userArtist };
           })
         );
 
@@ -150,6 +157,43 @@ router.get('/import/playlist/track/all', auth, async (req, res) => {
     );
 
     res.status(200).json(asyncRes);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err);
+  }
+});
+
+// @route   GET api/spotify/artist/:artist_id
+// @desc    Get the artist info and genre tags
+// @access  Private
+
+router.get('/import/artist/:artist_id', auth, async (req, res) => {
+  //Get the User info from DB
+  const user = await getUser(req.user.id);
+  let { user_id, spotify_id } = user;
+
+  let access_token = await spotify.checkAuth(user_id);
+  let artist_id = req.params.artist_id;
+  try {
+    const {
+      genres,
+      followers: { total: followers },
+      images,
+      popularity,
+    } = await spotify.getArtistInfo(artist_id, access_token);
+    let tagData = null;
+    if (genres.length > 0) {
+      tagData = await tags.createArtistTags(artist_id, genres, 'genre');
+    }
+    const img_url = images.length > 0 ? images[images.length - 1].url : null;
+    const artist = await updateArtist(
+      artist_id,
+      followers,
+      img_url,
+      popularity
+    );
+
+    res.status(200).json({ tagData, artist });
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

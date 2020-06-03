@@ -108,3 +108,19 @@ exports.getPlaylistTracks = async (
     console.log(err);
   }
 };
+
+exports.getArtistInfo = async (artist_id, access_token) => {
+  try {
+    const res = await axios({
+      method: 'get',
+      url: `https://api.spotify.com/v1/artists/${artist_id}`,
+      params: { access_token },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    return res.data;
+  } catch (err) {
+    console.error(err);
+  }
+};

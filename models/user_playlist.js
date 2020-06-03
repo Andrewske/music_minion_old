@@ -16,16 +16,16 @@ exports.getUserPlaylist = async (user_id, playlist_id) => {
   }
 };
 
-exports.addUserPlaylist = async (userId, playlistId) => {
+exports.addUserPlaylist = async (userId, playlistId, owner) => {
   try {
     userPlaylist = await pool.query(
       `
             INSERT INTO user_playlist
-            (user_id, playlist_id)
-            VALUES ($1, $2)
+            (user_id, playlist_id, owner)
+            VALUES ($1, $2, $3)
             RETURNING *
             `,
-      [userId, playlistId]
+      [userId, playlistId, owner]
     );
     return userPlaylist.rows[0];
   } catch (err) {

@@ -47,7 +47,17 @@ CREATE TABLE track (
 
 CREATE TABLE artist (
     artist_id VARCHAR(150) NOT NULL PRIMARY KEY,
-    name VARCHAR(150)
+    name VARCHAR(150),
+    followers INTEGER,
+    img_url VARCHAR(250),
+    popularity INTEGER
+);
+
+CREATE TABLE tag (
+    tag_id BIGSERIAL NOT NULL PRIMARY KEY,
+    name text NOT NULL,
+    type text NOT NULL,
+    UNIQUE (name, type)
 );
 
 
@@ -56,6 +66,7 @@ CREATE TABLE user_playlist (
     user_playlist_id BIGSERIAL NOT NULL,
     user_id UUID REFERENCES users(user_id),
     playlist_id VARCHAR(150) REFERENCES playlist(playlist_id),
+    owner BOOLEAN,
     UNIQUE (user_id, playlist_id)
 );
 
@@ -86,6 +97,36 @@ CREATE TABLE user_track (
 CREATE TABLE user_artist (
     user_artist_id BIGSERIAL NOT NULL,
     user_id UUID REFERENCES users(user_id),
-    artist_id VARCHAR(150) REFERENCES track(track_id),
+    artist_id VARCHAR(150) REFERENCES artist(artist_id),
+    following BOOLEAN,
     UNIQUE (user_id, artist_id)
+);
+
+
+CREATE TABLE user_tag (
+    user_tag_id BIGSERIAL NOT NULL,
+    user_id UUID REFERENCES users(user_id),
+    tag_id BIGSERIAL REFERENCES tag(tag_id),
+    UNIQUE (user_id, tag_id)
+);
+
+CREATE TABLE playlist_tag (
+    playlist_tag_id BIGSERIAL NOT NULL,
+    playlist_id VARCHAR(150) REFERENCES playlist(playlist_id),
+    tag_id BIGSERIAL REFERENCES tag(tag_id),
+    UNIQUE (playlist_id, tag_id)
+);
+
+CREATE TABLE track_tag (
+    track_tag_id BIGSERIAL NOT NULL,
+    track_id VARCHAR(150) REFERENCES track(track_id),
+    tag_id BIGSERIAL REFERENCES tag(tag_id),
+    UNIQUE (track_id, tag_id)
+);
+
+CREATE TABLE artist_tag (
+    artist_tag_id BIGSERIAL NOT NULL,
+    artist_id VARCHAR(150) REFERENCES artist(artist_id),
+    tag_id BIGSERIAL REFERENCES tag(tag_id),
+    UNIQUE (artist_id, tag_id)
 );
