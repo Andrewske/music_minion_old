@@ -1,5 +1,7 @@
 CREATE DATABASE music_minion;
 
+
+/* MAIN TABLES */
 CREATE TABLE users (
     user_id UUID NOT NULL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -37,6 +39,19 @@ CREATE TABLE playlist (
 );
 
 
+CREATE TABLE track (
+    track_id VARCHAR(150) NOT NULL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    popularity INTEGER
+);
+
+CREATE TABLE artist (
+    artist_id VARCHAR(150) NOT NULL PRIMARY KEY,
+    name VARCHAR(150)
+);
+
+
+/* Many to Many Connections */
 CREATE TABLE user_playlist (
     user_playlist_id BIGSERIAL NOT NULL,
     user_id UUID REFERENCES users(user_id),
@@ -44,35 +59,33 @@ CREATE TABLE user_playlist (
     UNIQUE (user_id, playlist_id)
 );
 
-CREATE TABLE track (
-    track_id VARCHAR(150) NOT NULL PRIMARY KEY,
-    name VARCHAR(150) NOT NULL,
-    img_url VARCHAR(500),
-
-)
-
-CREATE TABLE artist (
-    artist_id BIGSERIAL NOT NULL PRIMARY KEY,
-    name VARCHAR(150),
-)
-
 CREATE TABLE artist_track (
     artist_track_id BIGSERIAL NOT NULL,
-    artist_id INTEGER REFERENCES artist(artist_id),
+    artist_id VARCHAR(150) REFERENCES artist(artist_id),
     track_id VARCHAR(150) REFERENCES track(track_id),
     UNIQUE(artist_id, track_id)
-)
+);
 
 
 CREATE TABLE playlist_track (
     playlist_track_id BIGSERIAL NOT NULL,
     playlist_id VARCHAR(150) REFERENCES playlist(playlist_id),
     track_id VARCHAR(150) REFERENCES track(track_id),
+    added_at DATE,
     UNIQUE (playlist_id, track_id)
-)
+);
 
 CREATE TABLE user_track (
     user_track_id BIGSERIAL NOT NULL,
-    user_id UUID REFERENCES user(user_id),
-    track_id VARCHAR(150) REFERENCES track(track_id)
-)
+    user_id UUID REFERENCES users(user_id),
+    track_id VARCHAR(150) REFERENCES track(track_id),
+    added_at DATE,
+    UNIQUE (user_id, track_id)
+);
+
+CREATE TABLE user_artist (
+    user_artist_id BIGSERIAL NOT NULL,
+    user_id UUID REFERENCES users(user_id),
+    artist_id VARCHAR(150) REFERENCES track(track_id),
+    UNIQUE (user_id, artist_id)
+);

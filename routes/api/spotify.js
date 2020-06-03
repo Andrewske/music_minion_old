@@ -1,9 +1,12 @@
+const axios = require('axios');
 const express = require('express');
 const router = express.Router();
+
 const auth = require('../../middleware/auth');
 const spotify = require('../../components/spotify');
 const pool = require('../../config/db');
-const axios = require('axios');
+
+//Model Imports
 const { getUser } = require('../../models/users');
 const {
   getPlaylist,
@@ -15,6 +18,14 @@ const {
   getUserPlaylist,
   addUserPlaylist,
 } = require('../../models/user_playlist');
+const { getTrack, addTrack, updateTrack } = require('../../models/track');
+const { getUserTrack, addUserTrack } = require('../../models/user_track');
+const { getArtist, addArtist } = require('../../models/artist');
+const { getArtistTrack, addArtistTrack } = require('../../models/artist_track');
+const {
+  getPlaylistTrack,
+  addPlaylistTrack,
+} = require('../../models/playlist_track');
 
 // @route   GET api/spotify/import/playlists
 // @desc    Import all the users playlists into the DB
@@ -73,9 +84,72 @@ router.get('/import/playlist/track/all', auth, async (req, res) => {
 
     //Check that the Spotify Access is valid then Get the users playlists
     let access_token = await spotify.checkAuth(user_id);
-    let playlists = await spotify.getPlaylists(spotify_id, access_token);
+    const playlist_id = playlists.rows[0].playlist_id;
+    //For each playlist get the tracks and add them to the database
+    console.log(`Playlist ID: ${playlist_id}`);
+    let tracks = await spotify.getPlaylistTracks(playlist_id, access_token);
 
-    res.status(200).json(playlists.rows);
+    const asyncRes = await Promise.all(
+      tracks.map(async (track) => {
+        const data = {
+          track_id: track.track.id,
+          name: track.track.name,
+          platform: 'spotify',
+          added_at: track.added_at,
+          added_by: track.added_by.id,
+          artists: track.track.artists.map((artist) => ({
+            artist_id: artist.id,
+            name: artist.name,
+          })),
+          duration_ms: track.duration_ms,
+          isrc: track.track.external_ids.isrc || null,
+          popularity: track.popularity,
+        };
+
+        const {
+          track: {
+            id: track_id,
+            name,
+            external_ids: { isrc = null },
+            artists,
+          },
+          added_at,
+          added_by,
+          duration_ms,
+          popularity,
+        } = track;
+
+        console.log(`ID: ${track_id}, NAME: ${name}`);
+
+        let newTrack = (await getTrack(track_id))
+          ? await updateTrack(track_id, name, popularity)
+          : await addTrack(track_id, name, popularity);
+
+        let userTrack =
+          (await getUserTrack(user_id, track_id)) ||
+          (await addUserTrack(user_id, track_id));
+
+        let newArtists = await Promise.all(
+          artists.map(async ({ id: artist_id, name }) => {
+            let artist =
+              (await getArtist(artist_id)) ||
+              (await addArtist(artist_id, name));
+            let artistTrack =
+              (await getArtistTrack(artist_id, track_id)) ||
+              (await addArtistTrack(artist_id, track_id));
+            return { artist, artistTrack };
+          })
+        );
+
+        let playlistTrack =
+          (await getPlaylistTrack(playlist_id, track_id)) ||
+          (await addPlaylistTrack(playlist_id, track_id, added_at));
+
+        return { newTrack, userTrack, newArtists, playlistTrack };
+      })
+    );
+
+    res.status(200).json(asyncRes);
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

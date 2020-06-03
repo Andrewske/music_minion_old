@@ -72,3 +72,39 @@ exports.getPlaylists = async (
     console.log(err.message);
   }
 };
+
+exports.getPlaylistTracks = async (
+  playlist_id,
+  access_token,
+  fields = null,
+  limit = 100,
+  offset = 0
+) => {
+  try {
+    let total = 50;
+    tracks = [];
+    console.log(`Playlist ID: ${playlist_id}`);
+    while (offset < total) {
+      const res = await axios({
+        method: 'get',
+        url: `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
+        params: {
+          access_token: access_token,
+          limit,
+          offset,
+          market: 'from_token',
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+      total = res.data.total;
+      offset += limit;
+      tracks = res.data.items;
+    }
+
+    return tracks;
+  } catch (err) {
+    console.log(err);
+  }
+};
