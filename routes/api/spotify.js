@@ -5,7 +5,6 @@ const router = express.Router();
 const auth = require('../../middleware/auth');
 const spotify = require('../../components/spotify');
 const tags = require('../../components/tags');
-const pool = require('../../config/db');
 
 // Model Imports
 const { getUser } = require('../../models/users');
@@ -181,9 +180,19 @@ router.get('/import/artist/:artist_id', auth, async (req, res) => {
       images,
       popularity,
     } = await spotify.getArtistInfo(artist_id, access_token);
+
     let tagData = null;
     if (genres.length > 0) {
-      tagData = await tags.createArtistTags(artist_id, genres, 'genre');
+      tagData = await Promise.all(
+        genres.map(async (genre) => {
+          return await tags.createArtistTag({
+            artist_id,
+            user_id,
+            genre,
+            type: 'genre',
+          });
+        })
+      );
     }
     const img_url = images.length > 0 ? images[images.length - 1].url : null;
     const artist = await updateArtist(

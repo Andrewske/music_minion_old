@@ -102,31 +102,35 @@ CREATE TABLE user_artist (
     UNIQUE (user_id, artist_id)
 );
 
-
+/* DON"T THINK I NEED THIS
 CREATE TABLE user_tag (
     user_tag_id BIGSERIAL NOT NULL,
     user_id UUID REFERENCES users(user_id),
     tag_id BIGSERIAL REFERENCES tag(tag_id),
     UNIQUE (user_id, tag_id)
 );
+*/
 
 CREATE TABLE playlist_tag (
     playlist_tag_id BIGSERIAL NOT NULL,
-    playlist_id VARCHAR(150) REFERENCES playlist(playlist_id),
-    tag_id BIGSERIAL REFERENCES tag(tag_id),
+    playlist_id VARCHAR(150) NOT NULL REFERENCES playlist(playlist_id),
+    user_id UUID REFERENCES users(user_id),
+    tag_id BIGSERIAL NOT NULL REFERENCES tag(tag_id),
     UNIQUE (playlist_id, tag_id)
 );
 
 CREATE TABLE track_tag (
     track_tag_id BIGSERIAL NOT NULL,
-    track_id VARCHAR(150) REFERENCES track(track_id),
-    tag_id BIGSERIAL REFERENCES tag(tag_id),
+    track_id VARCHAR(150) NOT NULL REFERENCES track(track_id),
+    user_id UUID REFERENCES users(user_id),
+    tag_id BIGSERIAL NOT NULL REFERENCES tag(tag_id),
     UNIQUE (track_id, tag_id)
 );
 
 CREATE TABLE artist_tag (
     artist_tag_id BIGSERIAL NOT NULL,
-    artist_id VARCHAR(150) REFERENCES artist(artist_id),
-    tag_id BIGSERIAL REFERENCES tag(tag_id),
+    artist_id VARCHAR(150) NOT NULL REFERENCES artist(artist_id) ,
+    user_id UUID REFERENCES users(user_id),
+    tag_id BIGSERIAL NOT NULL REFERENCES tag(tag_id),
     UNIQUE (artist_id, tag_id)
 );

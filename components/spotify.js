@@ -124,3 +124,21 @@ exports.getArtistInfo = async (artist_id, access_token) => {
     console.error(err);
   }
 };
+
+exports.getAudioFeatures = async (track_id, access_token) => {
+  try {
+    const res = await axios({
+      method: 'get',
+      url: `https://api.spotify.com/v1/audio-features/${track_id}`,
+      params: { access_token },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    return res.data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// Get Audio Analysis https://api.spotify.com/v1/audio-analysis/{id} https://developer.spotify.com/documentation/web-api/reference-beta/#category-tracks

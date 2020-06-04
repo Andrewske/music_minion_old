@@ -45,5 +45,6 @@ app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/profile', require('./routes/api/profile'));
 app.use('/api/spotify', require('./routes/api/spotify'));
+app.use('/api/tag', require('./routes/api/tag'));
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

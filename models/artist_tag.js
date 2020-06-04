@@ -17,16 +17,16 @@ exports.getArtistTag = async (artist_id, tag_id) => {
   }
 };
 
-exports.addArtistTag = async (artist_id, tag_id) => {
+exports.addArtistTag = async (artist_id, user_id, tag_id) => {
   try {
     artistTag = await pool.query(
       `
             INSERT INTO artist_tag
-            (artist_id, tag_id)
-            VALUES ($1, $2)
+            (artist_id, user_id, tag_id)
+            VALUES ($1, $2, $3)
             RETURNING *
             `,
-      [artist_id, tag_id]
+      [artist_id, user_id, tag_id]
     );
     return artistTag.rows[0];
   } catch (err) {
