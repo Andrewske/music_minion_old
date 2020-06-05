@@ -15,12 +15,13 @@ const ImportLibrary = ({
     playlists: { number_of_playlists, playlist_ids },
     tracks,
     limit,
+    owner,
   },
 }) => {
   useEffect(() => {
     if (importing && !number_of_playlists) {
       console.log('Importing is true?');
-      importPlaylists(limit);
+      importPlaylists(limit, owner);
     }
     // if (importing && number_of_playlists > 0) {
     //   importTracks(playlist_ids);

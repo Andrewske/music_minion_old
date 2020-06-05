@@ -6,9 +6,10 @@ import { startImport } from '../../actions/importLibrary';
 const SpotifySettings = ({ startImport }) => {
   const [formData, setFormData] = useState({
     limit: null,
+    owner: 'follower',
   });
 
-  const { limit } = formData;
+  const { limit, owner } = formData;
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,6 +36,27 @@ const SpotifySettings = ({ startImport }) => {
             name='limit'
             value={limit}
           ></input>
+          <br />
+          <input
+            type='radio'
+            id='follower'
+            name='owner'
+            value='follower'
+            checked={owner === 'follower'}
+            onChange={(e) => onChange(e)}
+          ></input>{' '}
+          <label for='owner'> Import all playlists I own and follow</label>
+          <br />
+          <input
+            type='radio'
+            id='owner'
+            name='owner'
+            value='owner'
+            checked={owner === 'owner'}
+            onChange={(e) => onChange(e)}
+          ></input>{' '}
+          <label for='owner'> Only import playlists I own</label>
+          <br />
         </p>
 
         <button onClick={(e) => onClick(e)} className='btn btn-spotify'>

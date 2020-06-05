@@ -30,6 +30,13 @@ router.get('/import/playlist/all', auth, async (req, res) => {
     let access_token = await spotify.checkAuth(user_id);
     let playlists = await spotify.getPlaylists(spotify_id, access_token);
     const limit = parseInt(req.query.limit) || null;
+    const owner = req.query.owner || null;
+    if (owner === 'owner') {
+      console.log('limiting to user owned playlists');
+      playlists = playlists.filter(
+        (playlist) => playlist.owner.id === spotify_id
+      );
+    }
     if (limit) {
       console.log(`limiting playlists to: ${limit}`);
       playlists = playlists.slice(0, limit);

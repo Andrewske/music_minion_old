@@ -12,6 +12,7 @@ const initialState = {
   importing: false,
   error: {},
   limit: null,
+  owner: null,
 };
 
 export default function (state = initialState, action) {
@@ -23,6 +24,7 @@ export default function (state = initialState, action) {
         ...state,
         playlists: {},
         limit: payload.limit,
+        owner: payload.owner,
         importing: true,
         error: {},
       };

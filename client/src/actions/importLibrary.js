@@ -17,10 +17,10 @@ export const startImport = (formData) => async (dispatch) => {
   });
 };
 
-export const importPlaylists = (limit) => async (dispatch) => {
+export const importPlaylists = (limit, owner) => async (dispatch) => {
   try {
     const res = await axios.get(
-      `/api/spotify/import/playlist/all?limit=${limit}`
+      `/api/spotify/import/playlist/all?limit=${limit}&owner=${owner}`
     );
 
     dispatch({
