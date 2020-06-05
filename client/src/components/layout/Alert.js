@@ -12,7 +12,7 @@ const Alert = ({ alerts }) =>
   ));
 
 Alert.propTypes = {
-  setAlert: PropTypes.func.isRequired,
+  setAlert: PropTypes.func,
   alerts: PropTypes.array,
 };
 

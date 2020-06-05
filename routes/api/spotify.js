@@ -72,7 +72,7 @@ router.get('/import/playlist/all', auth, async (req, res) => {
   }
 });
 
-// @route   GET api/spotify/import/playlists/tracks
+// @route   GET api/spotify/import/playlists/track
 // @desc    Import all the users tracks from playlists into the DB
 // @access  Private
 router.get('/import/playlist/track/:playlist_id', auth, async (req, res) => {
@@ -93,32 +93,38 @@ router.get('/import/playlist/track/:playlist_id', auth, async (req, res) => {
     // Format the track info
     let track_info = [];
     let artist_info = [];
-    tracks.map((t) => {
-      let {
-        track: {
-          id: track_id,
-          name,
-          external_ids: { isrc = null },
-          artists,
-        },
-        added_at,
-        added_by,
-        duration_ms,
-        popularity,
-      } = t;
+    let errors = [];
 
-      artists = artists.map((artist) => ({
-        user_id,
-        track_id,
-        artist_id: artist.id,
-        name: artist.name,
-      }));
-      if (track_id) {
-        track_info = [
-          ...track_info,
-          { user_id, track_id, playlist_id, name, popularity },
-        ];
-        artist_info = [...artist_info, ...artists];
+    tracks.map((t, i) => {
+      try {
+        let {
+          track: {
+            id: track_id,
+            name,
+            external_ids: { isrc = null },
+            artists,
+          },
+          added_at,
+          added_by,
+          duration_ms,
+          popularity,
+        } = t;
+
+        artists = artists.map((artist) => ({
+          user_id,
+          track_id,
+          artist_id: artist.id,
+          name: artist.name,
+        }));
+        if (track_id) {
+          track_info = [
+            ...track_info,
+            { user_id, track_id, playlist_id, name, popularity },
+          ];
+          artist_info = [...artist_info, ...artists];
+        }
+      } catch (err) {
+        errors = [...errors, { map_error: { index: i, elem: t } }];
       }
     });
 
@@ -149,6 +155,7 @@ router.get('/import/playlist/track/:playlist_id', auth, async (req, res) => {
       new_artist_tracks: newArtistTracks.length,
       new_user_artists: newUserArtists.length,
       new_playlist_tracks: newPlaylistTracks.length,
+      errors,
     });
   } catch (err) {
     console.error(err);

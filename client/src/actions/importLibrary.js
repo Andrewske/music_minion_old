@@ -17,7 +17,8 @@ export const startImport = (formData) => async (dispatch) => {
   });
 };
 
-export const importPlaylists = (limit, owner) => async (dispatch) => {
+export const importPlaylists = ({ limit, owner }) => async (dispatch) => {
+  console.log('importing playlists');
   try {
     const res = await axios.get(
       `/api/spotify/import/playlist/all?limit=${limit}&owner=${owner}`
@@ -31,31 +32,41 @@ export const importPlaylists = (limit, owner) => async (dispatch) => {
     console.error(err.message);
     dispatch({
       type: IMPORT_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
+      payload: { msg: err.message },
     });
   }
 };
 
-export const importTracks = (playlist_ids) => async (dispatch) => {
+export const importTracks = (playlist_data) => async (dispatch) => {
   try {
     const asyncRes = await Promise.all(
-      playlist_ids.map(async (id) => {
-        const res = await axios.get(`/api/spotify/import/playlist/track/${id}`);
-        dispatch({
-          type: IMPORT_TRACKS,
-          payload: res.data,
-        });
+      playlist_data.map(async ({ playlist_id }) => {
+        try {
+          const res = await axios.get(
+            `/api/spotify/import/playlist/track/${playlist_id}`
+          );
+          dispatch({
+            type: IMPORT_TRACKS,
+            payload: res.data,
+          });
+        } catch (e) {
+          dispatch({
+            type: IMPORT_ERROR,
+            payload: { msg: e },
+          });
+        }
       })
     );
-    dispatch({
-      type: IMPORT_END,
-      payload: null,
-    });
   } catch (err) {
     console.error(err.message);
     dispatch({
       type: IMPORT_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
+      payload: { msg: err },
+    });
+  } finally {
+    dispatch({
+      type: IMPORT_END,
+      payload: null,
     });
   }
 };

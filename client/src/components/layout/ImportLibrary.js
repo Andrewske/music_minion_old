@@ -1,31 +1,28 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  importPlaylists,
-  importTracks,
-  endImport,
-} from '../../actions/importLibrary';
+import { importPlaylists, importTracks } from '../../actions/importLibrary';
 
 const ImportLibrary = ({
   importPlaylists,
   importTracks,
   importLibrary: {
+    import_playlists,
+    import_tracks,
     importing,
-    playlists: { number_of_playlists, playlist_ids },
+    playlists: { number_of_playlists, playlist_data },
     tracks,
     limit,
     owner,
   },
 }) => {
   useEffect(() => {
-    if (importing && !number_of_playlists) {
-      console.log('Importing is true?');
-      importPlaylists(limit, owner);
+    if (import_playlists) {
+      importPlaylists({ limit, owner });
     }
-    // if (importing && number_of_playlists > 0) {
-    //   importTracks(playlist_ids);
-    // }
+    if (import_tracks) {
+      importTracks(playlist_data);
+    }
   });
 
   if (importing) {

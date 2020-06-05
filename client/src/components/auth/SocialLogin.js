@@ -14,7 +14,7 @@ const SocialLogin = ({ registerSocial }) => {
     } catch (err) {
       console.err(err.message);
     }
-  }, []);
+  }, [registerSocial, platform]);
 
   return <Redirect to={'/explore'} />;
 };

@@ -8,8 +8,10 @@ import {
 
 const initialState = {
   playlists: {},
-  tracks: {},
+  tracks: [],
   importing: false,
+  import_playlists: false,
+  import_tracks: false,
   error: {},
   limit: null,
   owner: null,
@@ -23,8 +25,10 @@ export default function (state = initialState, action) {
       return {
         ...state,
         playlists: {},
+        tracks: [],
         limit: payload.limit,
         owner: payload.owner,
+        import_playlists: true,
         importing: true,
         error: {},
       };
@@ -32,24 +36,28 @@ export default function (state = initialState, action) {
       return {
         ...state,
         playlists: payload,
-        importing: false,
+        import_playlists: false,
+        import_tracks: true,
       };
     case IMPORT_TRACKS:
       return {
         ...state,
-        tracks: payload,
-        importing: false,
+        tracks: [...state.tracks, payload],
+        import_tracks: false,
       };
     case IMPORT_END:
       return {
         ...state,
+        import_playlists: false,
+        import_tracks: false,
         importing: false,
       };
     case IMPORT_ERROR:
       return {
         ...state,
-        error: payload,
-        importing: false,
+        error: { ...state.error, payload },
+        import_playlists: false,
+        import_tracks: false,
       };
     default:
       return state;
