@@ -1,10 +1,7 @@
-import { LOAD_PLAYLISTS, LIBRARY_ERROR } from '../actions/types';
+import { LOAD_PLAYLISTS, PLAYLIST_ERROR } from '../actions/types';
 
 const initialState = {
-  user: null,
   playlists: [],
-  tracks: [],
-  artists: [],
   loading: true,
   error: {},
 };
@@ -17,9 +14,9 @@ export default function (state = initialState, action) {
       return {
         ...state,
         playlists: payload,
-        laoding: false,
+        loading: false,
       };
-    case LIBRARY_ERROR:
+    case PLAYLIST_ERROR:
       return {
         ...state,
         error: { ...state.error, payload },

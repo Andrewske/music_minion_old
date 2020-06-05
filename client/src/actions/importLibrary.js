@@ -10,7 +10,7 @@ import {
 
 // Import Playlists
 
-export const startImport = (formData) => async (dispatch) => {
+export const startImport = (formData) => (dispatch) => {
   dispatch({
     type: IMPORT_START,
     payload: formData,

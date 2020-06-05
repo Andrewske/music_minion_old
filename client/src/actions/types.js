@@ -16,3 +16,5 @@ export const IMPORT_START = 'IMPORT_START';
 export const IMPORT_END = 'IMPORT_END';
 export const GET_LIBRARY = 'GET_LIBRARY';
 export const LIBRARY_ERROR = 'LIBRARY_ERROR';
+export const LOAD_PLAYLISTS = 'LOAD_PLAYLISTS';
+export const PLAYLIST_ERROR = 'PLAYLIST_ERROR';

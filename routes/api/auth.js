@@ -1,25 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../../middleware/auth');
 const pool = require('../../config/db');
 const { check, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const auth = require('../../middleware/auth');
 const CLIENT_AUTH_URL = 'http://localhost:3000/auth/login?';
 
 // @route   GET api/auth
 // @desc    Test route
 // @access  Public
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const user = await pool.query('SELECT * FROM users WHERE user_id = $1', [
-      req.user.id,
+      req.user.user_id,
     ]);
 
     delete user.rows[0].password;
-
+    console.log(user.rows[0]);
     res.json(user.rows[0]);
   } catch (err) {
     console.error(err.message);
