@@ -5,7 +5,11 @@ import Landing from './components/layout/Landing';
 import Alert from './components/layout/Alert';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
+import Explore from './components/layout/Explore';
+import ImportLibrary from './components/layout/ImportLibrary';
+import Settings from './components/layout/Settings';
 import SocialLogin from './components/auth/SocialLogin';
+import PrivateRoute from './components/routing/PrivateRoute';
 import './App.css';
 // Redux
 import { Provider } from 'react-redux';
@@ -33,14 +37,17 @@ const App = () => {
     <Provider store={store}>
       <Router>
         <Fragment>
-          <Navbar />
+          <Navbar hidden={false} />
           <Route exact path='/' component={Landing} />
           <section className='container'>
             <Alert />
+            <ImportLibrary />
             <Switch>
               <Route exact path='/auth/login' component={SocialLogin} />
               <Route exact path='/register' component={Register} />
               <Route exact path='/login' component={Login} />
+              <PrivateRoute exact path='/explore' component={Explore} />
+              <PrivateRoute exact path='/settings' component={Settings} />
             </Switch>
           </section>
         </Fragment>

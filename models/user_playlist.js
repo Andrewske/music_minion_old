@@ -1,5 +1,33 @@
 const pool = require('../config/db');
 
+exports.addUserPlaylists = async (playlist_data) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+    const asyncRes = await Promise.all(
+      playlist_data.map(async ({ user_id, playlist_id }) => {
+        const insertText = `
+            INSERT INTO user_playlist (user_id, playlist_id) 
+            VALUES ($1, $2)
+            ON CONFLICT
+            DO NOTHING`;
+        const insertValues = [user_id, playlist_id];
+        const res = await client.query(insertText, insertValues);
+        return res.rows;
+      })
+    );
+    await client.query('COMMIT');
+    return asyncRes;
+  } catch (e) {
+    await client.query('ROLLBACK');
+    console.error('Error Inserting user_playlists');
+    throw e;
+  } finally {
+    await client.release();
+  }
+};
+
 exports.getUserPlaylist = async (user_id, playlist_id) => {
   try {
     const userPlaylist = await pool.query(

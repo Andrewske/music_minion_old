@@ -1,32 +1,19 @@
-const axios = require('axios');
 const express = require('express');
 const router = express.Router();
-
 const auth = require('../../middleware/auth');
 const spotify = require('../../components/spotify');
 const tags = require('../../components/tags');
 
 // Model Imports
 const { getUser } = require('../../models/users');
-const {
-  getPlaylist,
-  getUserPlaylists,
-  addPlaylist,
-  updatePlaylist,
-} = require('../../models/playlist');
-const {
-  getUserPlaylist,
-  addUserPlaylist,
-} = require('../../models/user_playlist');
-const { getTrack, addTrack, updateTrack } = require('../../models/track');
-const { getUserTrack, addUserTrack } = require('../../models/user_track');
-const { getUserArtist, addUserArtist } = require('../../models/user_artist');
-const { getArtist, addArtist, updateArtist } = require('../../models/artist');
-const { getArtistTrack, addArtistTrack } = require('../../models/artist_track');
-const {
-  getPlaylistTrack,
-  addPlaylistTrack,
-} = require('../../models/playlist_track');
+const { addPlaylists } = require('../../models/playlist');
+const { addUserPlaylists } = require('../../models/user_playlist');
+const { addTracks } = require('../../models/track');
+const { addUserTracks } = require('../../models/user_track');
+const { addUserArtists } = require('../../models/user_artist');
+const { addArtists, updateArtist } = require('../../models/artist');
+const { addArtistTracks } = require('../../models/artist_track');
+const { addPlaylistTracks } = require('../../models/playlist_track');
 
 // ROUTES
 
@@ -42,31 +29,36 @@ router.get('/import/playlist/all', auth, async (req, res) => {
     //Check that the Spotify Access is valid then Get the users playlists
     let access_token = await spotify.checkAuth(user_id);
     let playlists = await spotify.getPlaylists(spotify_id, access_token);
+    const limit = parseInt(req.query.limit) || null;
+    if (limit) {
+      console.log(`limiting playlists to: ${limit}`);
+      playlists = playlists.slice(0, limit);
+    }
+
+    // Format Playlist Data
+    playlist_data = playlists.map((p) => ({
+      user_id,
+      playlist_id: p.id,
+      name: p.name,
+      owner: p.owner.id == spotify_id,
+      img_url: p.images.length > 0 ? p.images[0].url : null,
+      size: p.tracks.total,
+      platform: 'spotify',
+    }));
 
     // For each playlist add the data and record to to the playlist and user_playlist models
-    const asyncRes = await Promise.all(
-      playlists.map(async (playlist) => {
-        const data = {
-          playlist_id: playlist.id,
-          name: playlist.name,
-          owner: playlist.owner.id == spotify_id,
-          img_url: playlist.images.length > 0 ? playlist.images[0].url : null,
-          size: playlist.tracks.total,
-          platform: 'spotify',
-        };
-        let newPlaylist = (await getPlaylist(data.playlist_id))
-          ? await updatePlaylist(data)
-          : await addPlaylist(data);
+    let newPlaylists = await addPlaylists(playlist_data);
+    let newUserPlaylists = await addUserPlaylists(playlist_data);
 
-        let userPlaylist =
-          (await getUserPlaylist(user_id, data.playlist_id)) ||
-          (await addUserPlaylist(user_id, data.playlist_id, data.owner));
-
-        return { newPlaylist, userPlaylist };
-      })
-    );
-
-    res.status(200).json(asyncRes);
+    res.status(200).json({
+      number_of_playlists: playlist_data.length,
+      playlists_created: newPlaylists.length,
+      user_playlists_created: newUserPlaylists.length,
+      number_of_tracks: playlist_data.reduce((a, b) => ({
+        size: a.size + b.size,
+      })),
+      playlist_data: playlist_data,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
@@ -76,91 +68,87 @@ router.get('/import/playlist/all', auth, async (req, res) => {
 // @route   GET api/spotify/import/playlists/tracks
 // @desc    Import all the users tracks from playlists into the DB
 // @access  Private
-router.get('/import/playlist/track/all', auth, async (req, res) => {
+router.get('/import/playlist/track/:playlist_id', auth, async (req, res) => {
   try {
-    //Get the User info from DB
+    // Get the User info from DB
     const user = await getUser(req.user.id);
     let { user_id, spotify_id } = user;
 
-    //Get the User's playlists from DB
-    const playlists = await getUserPlaylists(user_id);
+    // Get the playlist_id from params
+    const playlist_id = req.params.playlist_id;
 
-    //Check that the Spotify Access is valid then Get the users playlists
+    // Check that the Spotify Access is valid then Get the users playlists
     let access_token = await spotify.checkAuth(user_id);
-    const playlist_id = playlists.rows[0].playlist_id;
-    //For each playlist get the tracks and add them to the database
-    console.log(`Playlist ID: ${playlist_id}`);
+
+    // Get the playlist tracks from Spotify
     let tracks = await spotify.getPlaylistTracks(playlist_id, access_token);
 
-    const asyncRes = await Promise.all(
-      tracks.map(async (track) => {
-        const data = {
-          track_id: track.track.id,
-          name: track.track.name,
-          platform: 'spotify',
-          added_at: track.added_at,
-          added_by: track.added_by.id,
-          artists: track.track.artists.map((artist) => ({
-            artist_id: artist.id,
-            name: artist.name,
-          })),
-          duration_ms: track.duration_ms,
-          isrc: track.track.external_ids.isrc || null,
-          popularity: track.popularity,
-        };
+    // Format the track info
+    let track_info = [];
+    let artist_info = [];
+    tracks.map((t) => {
+      let {
+        track: {
+          id: track_id,
+          name,
+          external_ids: { isrc = null },
+          artists,
+        },
+        added_at,
+        added_by,
+        duration_ms,
+        popularity,
+      } = t;
 
-        const {
-          track: {
-            id: track_id,
-            name,
-            external_ids: { isrc = null },
-            artists,
-          },
-          added_at,
-          added_by,
-          duration_ms,
-          popularity,
-        } = track;
+      artists = artists.map((artist) => ({
+        user_id,
+        track_id,
+        artist_id: artist.id,
+        name: artist.name,
+      }));
+      if (track_id) {
+        track_info = [
+          ...track_info,
+          { user_id, track_id, playlist_id, name, popularity },
+        ];
+        artist_info = [...artist_info, ...artists];
+      }
+    });
 
-        console.log(`ID: ${track_id}, NAME: ${name}`);
+    // Add tracks to the database
+    const newTracks = await addTracks(track_info);
 
-        let newTrack = (await getTrack(track_id))
-          ? await updateTrack(track_id, name, popularity)
-          : await addTrack(track_id, name, popularity);
+    // Add the user track record
+    const userTracks = await addUserTracks(track_info);
 
-        let userTrack =
-          (await getUserTrack(user_id, track_id)) ||
-          (await addUserTrack(user_id, track_id));
+    // Add the artists
+    const newArtists = await addArtists(artist_info);
 
-        let newArtists = await Promise.all(
-          artists.map(async ({ id: artist_id, name }) => {
-            let artist =
-              (await getArtist(artist_id)) ||
-              (await addArtist(artist_id, name));
-            let artistTrack =
-              (await getArtistTrack(artist_id, track_id)) ||
-              (await addArtistTrack(artist_id, track_id));
-            let userArtist =
-              (await getUserArtist(user_id, artist_id)) ||
-              (await addUserArtist(user_id, artist_id));
-            return { artist, artistTrack, userArtist };
-          })
-        );
+    // Add the artist track references
+    const newArtistTracks = await addArtistTracks(artist_info);
 
-        let playlistTrack =
-          (await getPlaylistTrack(playlist_id, track_id)) ||
-          (await addPlaylistTrack(playlist_id, track_id, added_at));
+    // Add the user artist references
+    const newUserArtists = await addUserArtists(artist_info);
 
-        return { newTrack, userTrack, newArtists, playlistTrack };
-      })
-    );
+    // Add the playlist track references
+    const newPlaylistTracks = await addPlaylistTracks(track_info);
 
-    res.status(200).json(asyncRes);
+    res.status(200).json({
+      total_tracks: tracks.length,
+      total_artists: artist_info.length,
+      new_tracks: newTracks.length,
+      user_tracks: userTracks.length,
+      new_artists: newArtists.length,
+      new_artist_tracks: newArtistTracks.length,
+      new_user_artists: newUserArtists.length,
+      new_playlist_tracks: newPlaylistTracks.length,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send(err);
   }
 });
+// https://open.spotify.com/playlist/23V5rGAnrZ4ODedDPsJJLT?si=V0Yk4TNUSuuxfMfImqfdaA
 
 // @route   GET api/spotify/artist/:artist_id
 // @desc    Get the artist info and genre tags

@@ -6,7 +6,6 @@ const { getUserToken } = require('../models/user_token');
 // Check the Token Status
 exports.checkAuth = async (userId) => {
   const userToken = await getUserToken(userId, 'spotify');
-  console.log('UserToken');
   let { access_token, refresh_token, expires_in, updated_at } = userToken;
 
   if ((Date.now() - updated_at) / 1000 > expires_in) {

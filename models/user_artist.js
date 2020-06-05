@@ -1,5 +1,33 @@
 const pool = require('../config/db');
 
+exports.addUserArtists = async (artist_info) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+    const asyncRes = await Promise.all(
+      artist_info.map(async ({ user_id, artist_id }) => {
+        const insertText = `
+            INSERT INTO user_artist (user_id, artist_id) 
+            VALUES ($1, $2)
+            ON CONFLICT
+            DO NOTHING`;
+        const insertValues = [user_id, artist_id];
+        const res = await client.query(insertText, insertValues);
+        return res.rows;
+      })
+    );
+    await client.query('COMMIT');
+    return asyncRes;
+  } catch (e) {
+    await client.query('ROLLBACK');
+    console.error('Error Inserting user_artists');
+    throw e;
+  } finally {
+    await client.release();
+  }
+};
+
 exports.getUserArtist = async (user_id, artist_id) => {
   try {
     const userArtist = await pool.query(

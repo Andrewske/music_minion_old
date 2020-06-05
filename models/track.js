@@ -1,4 +1,46 @@
 const pool = require('../config/db');
+const { upsertQuery } = require('./queries');
+
+exports.addTracks = async (track_info) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+    const asyncRes = await Promise.all(
+      track_info.map(async ({ track_id, name, popularity }) => {
+        const insertText = `
+            INSERT INTO track (track_id, name, popularity) 
+            VALUES ($1, $2, $3)
+            ON CONFLICT (track_id)
+            DO UPDATE
+            SET name = EXCLUDED.name, popularity = EXCLUDED.popularity
+            RETURNING *`;
+        const insertValues = [track_id, name, popularity];
+        const res = await client.query(insertText, insertValues);
+        return res.rows;
+      })
+    );
+    await client.query('COMMIT');
+    return asyncRes;
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    await client.release();
+  }
+};
+
+exports.upsertTrack = async (track_id, name, popularity) => {
+  const insertQuery = {
+    text: 'INSERT INTO track (track_id, name, popularity) VALUES ($1, $2, $3)',
+    values: [track_id, name, popularity],
+  };
+  const updateQuery = {
+    text: 'UPDATE track SET name = $2, popularity = $3 WHERE track_id = $1',
+    values: [track_id, name, popularity],
+  };
+  return await upsertQuery(updateQuery, insertQuery);
+};
 
 exports.getTrack = async (track_id) => {
   try {

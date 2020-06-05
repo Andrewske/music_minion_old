@@ -17,8 +17,8 @@ body {
   font-family: 'Roboto', sans-serif;
   font-size: 1rem;
   line-height: 1.6;
-  background-color: #fff;
-  color: #333;
+  background: #1a1a1a;
+  color: #ffffff;
 }
 
 a {
@@ -226,7 +226,6 @@ img {
 
 /* Overlay */
 .dark-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
   position: absolute;
   top: 0;
   left: 0;
@@ -333,7 +332,6 @@ button {
 /* Landing Page */
 .landing {
   position: relative;
-  background: url('./img/showcase.jpg') no-repeat center center/cover;
   height: 100vh;
 }
 
@@ -512,6 +510,9 @@ button {
   }
 
   /* Navbar */
+  .hidden {
+    display: none;
+  }
   .navbar {
     display: block;
     text-align: center;

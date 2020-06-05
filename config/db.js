@@ -1,4 +1,4 @@
-const Pool = require('pg').Pool;
+const { Pool } = require('pg');
 const config = require('config');
 
 const pool = new Pool({
@@ -7,6 +7,9 @@ const pool = new Pool({
   host: 'localhost',
   post: 5432,
   database: 'music_minion',
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 });
 
 module.exports = pool;

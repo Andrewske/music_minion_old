@@ -16,7 +16,7 @@ const SocialLogin = ({ registerSocial }) => {
     }
   }, []);
 
-  return <Redirect to={'/'} />;
+  return <Redirect to={'/explore'} />;
 };
 
 SocialLogin.propTypes = {

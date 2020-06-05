@@ -1,9 +1,15 @@
-const express = require('express');
-const router = express.Router();
+//const express = require('express');
+//const router = express.Router();
 
-// @route   GET api/profile
+// @route   GET api/profile/me
 // @desc    Test route
 // @access  Public
-router.get('/', (req, res) => res.send('Profile route'));
+// router.get('/me', auth, async (req, res) => {
+//     try {
+//         const
+//     } catch (err) {
 
-module.exports = router;
+//     }
+// });
+
+// module.exports = router;

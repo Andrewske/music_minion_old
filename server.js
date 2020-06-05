@@ -43,8 +43,11 @@ app.use(express.json({ extended: false }));
 //DEFINE ROUTES//
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
-app.use('/api/profile', require('./routes/api/profile'));
+//app.use('/api/profile', require('./routes/api/profile'));
 app.use('/api/spotify', require('./routes/api/spotify'));
 app.use('/api/tag', require('./routes/api/tag'));
+app.use('/api/playlist', require('./routes/api/playlist'));
+app.use('/api/track', require('./routes/api/track'));
+app.use('/api/artist', require('./routes/api/artist'));
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
