@@ -9,20 +9,13 @@ import {
   LOGOUT,
 } from './types';
 import { setAlert } from './alert';
-import setAuthToken from '../utils/setAuthToken';
 
 // Load User
 
 export const loadUser = () => async (dispatch) => {
-  if (localStorage.token) {
-    console.log('has token');
-    setAuthToken(localStorage.token);
-  }
-  console.log('loading user');
-
   try {
     const res = await axios.get('/api/auth');
-    console.log('Got Response');
+    console.log(res);
     dispatch({
       type: USER_LOADED,
       payload: res.data,
@@ -53,31 +46,6 @@ export const register = ({ name, email, password }) => async (dispatch) => {
       type: REGISTER_SUCCESS,
       payload: res.data,
     });
-    localStorage.setItem('token', res.data.token);
-    dispatch(loadUser());
-  } catch (err) {
-    const errors = err.response.data.errors;
-
-    if (errors) {
-      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
-    }
-    dispatch({
-      type: REGISTER_FAIL,
-    });
-  }
-};
-
-// Register through a social Platform
-export const registerSocial = (platform) => async (dispatch) => {
-  try {
-    console.log('trying to fetch the user');
-
-    const res = await axios.get(`/api/auth/${platform}/success`);
-    console.log(res);
-    dispatch({
-      type: REGISTER_SUCCESS,
-      payload: res.data,
-    });
 
     dispatch(loadUser());
   } catch (err) {
@@ -101,17 +69,17 @@ export const login = (email, password) => async (dispatch) => {
   };
 
   const body = JSON.stringify({ email, password });
-  console.log(`Logging in ${email}`);
   try {
-    const res = await axios.post('/api/auth', body, config);
-
+    const res = await axios.post('/api/auth/login', body, config);
+    console.log(res);
     dispatch({
       type: LOGIN_SUCCESS,
       payload: res.data,
     });
-
-    dispatch(loadUser());
   } catch (err) {
+    console.log(err);
+    console.log('We caught an error?');
+    console.log(err.response);
     const errors = err.response.data.errors;
 
     if (errors) {
@@ -124,8 +92,7 @@ export const login = (email, password) => async (dispatch) => {
 };
 
 // Logout
-export const logout = () => async (dispatch) => {
-  const res = await axios.get('/api/auth/logout');
-  console.log(res);
+export const logout = () => (dispatch) => {
+  axios.get('/api/auth/logout');
   dispatch({ type: LOGOUT });
 };

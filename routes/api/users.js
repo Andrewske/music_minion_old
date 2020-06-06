@@ -2,10 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const pool = require('../../config/db');
-const { uuid } = require('uuidv4');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const config = require('config');
 
 // @route   Post api/users
 // @desc    Register User
@@ -21,62 +18,59 @@ router.post(
     ).isLength({ min: 6 }),
   ],
   async (req, res) => {
-    const errors = validationResult(req);
+    console.log('attempting to register a user');
+    let errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
     const { name, email, password } = req.body;
-
+    const client = await pool.connect();
     try {
+      await client.query('BEGIN');
+
       const salt = await bcrypt.genSalt(10);
       const password_hash = await bcrypt.hash(password, salt);
-      const user = await pool.query(
-        'INSERT INTO users (user_id, name, email, password) VALUES(uuid_generate_v4(), $1, $2, $3) RETURNING *',
-        [name, email, password_hash]
+
+      let user = await client.query(
+        'SELECT user_id FROM users WHERE email = $1',
+        [email]
       );
 
-      const payload = {
-        user: {
-          id: user.rows[0].user_id,
-        },
-      };
-
-      jwt.sign(
-        payload,
-        config.get('jwtSecret'),
-        { expiresIn: 360000 },
-        (err, token) => {
-          if (err) throw err;
-          res.json({ token });
-        }
-      );
-    } catch (err) {
-      console.log(err.message);
-      if (err.constraint === 'users_email_key') {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: 'User already exists' }] });
+      if (user.rows.length !== 0) {
+        console.log(user.rows);
+        errors = [
+          {
+            msg: 'This email address is already registered. Try loggin in!',
+          },
+        ];
+        return res.status(400).json({
+          errors: errors,
+        });
       } else {
-        res.status(500).send('Server Error');
+        user = await client.query(
+          'INSERT INTO users (user_id, name, email,password) VALUES (uuid_generate_v4(),$1, $2, $3) RETURNING *',
+          [name, email, password_hash]
+        );
+
+        client.query('COMMIT');
+        delete user.rows[0].password;
+        return res.status(200).send(user.rows[0]);
       }
+    } catch (err) {
+      console.log(err);
+      errors = [
+        {
+          msg: err.message,
+        },
+      ];
+      return res.status(500).json({
+        errors: errors,
+      });
+    } finally {
+      client.release();
     }
   }
 );
 
 module.exports = router;
-
-// app.post('/users', async (req, res) => {
-//     try {
-//       const { username } = req.body;
-
-//       const newUser = await pool.query(
-//         'INSERT INTO users (username) VALUES($1) RETURNING *',
-//         [username]
-//       );
-
-//       res.json(newUser.rows[0]);
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   });

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const pagination = require('../../middleware/pagination');
-const auth = require('../../middleware/auth');
 const spotify = require('../../components/spotify');
 const tags = require('../../components/tags');
 const pool = require('../../config/db');
@@ -15,7 +14,7 @@ const pool = require('../../config/db');
 // @desc    Create a track tag with {track_id, user_id, name, type}
 // @access  Private
 
-router.post('/track', auth, async (req, res) => {
+router.post('/track', async (req, res) => {
   try {
     const newTag = await tags.createTrackTag(req.body);
 
@@ -34,7 +33,7 @@ module.exports = router;
 // @desc    Create a playlist tag with {playlist_id, user_id, name, type}
 // @access  Private
 
-router.post('/playlist', auth, async (req, res) => {
+router.post('/playlist', async (req, res) => {
   try {
     const newTag = await tags.createPlaylistTag(req.body);
 
@@ -51,7 +50,7 @@ module.exports = router;
 // @desc    Create a artist tag with {artist_id, user_id, name, type}
 // @access  Private
 
-router.post('/artist', auth, async (req, res) => {
+router.post('/artist', async (req, res) => {
   try {
     const newTag = await tags.createArtistTag(req.body);
 
@@ -67,7 +66,7 @@ router.post('/artist', auth, async (req, res) => {
 // @route   GET api/track/me
 // @desc    Get all of a users track
 // @access  Public
-router.get('/me', auth, pagination('track'), async (req, res) => {
+router.get('/me', pagination('track'), async (req, res) => {
   try {
     return res.status(200).json(res.paginatedResults);
   } catch (err) {

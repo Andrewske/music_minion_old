@@ -4,7 +4,7 @@
 // @route   GET api/profile/me
 // @desc    Test route
 // @access  Public
-// router.get('/me', auth, async (req, res) => {
+// router.get('/me', async (req, res) => {
 //     try {
 //         const
 //     } catch (err) {

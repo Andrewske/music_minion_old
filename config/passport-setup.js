@@ -1,17 +1,23 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20');
 const SpotifyStrategy = require('passport-spotify').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcryptjs');
 const pool = require('./db');
 const keys = require('./keys');
 
 // serialize the user.id to save in the cookie session
 // so the browser will remember the user when login
 passport.serializeUser((user, done) => {
+  console.log('Serializing');
+  console.log(user);
   done(null, user.user_id);
 });
 
 // deserialize the cookieUserId to user in the database
 passport.deserializeUser(async (id, done) => {
+  console.log('Deserializing');
+  console.log(id);
   try {
     const user = await pool.query('SELECT * FROM users WHERE user_id = $1', [
       id,
@@ -21,6 +27,50 @@ passport.deserializeUser(async (id, done) => {
     console.error(err.message);
   }
 });
+
+passport.use(
+  'local',
+  new LocalStrategy(
+    { passReqToCallback: true, usernameField: 'email' },
+    async (req, username, password, done) => {
+      console.log('Im here!');
+      console.log(username);
+
+      const client = await pool.connect();
+      try {
+        // Check if the User Exists
+        let user = await client.query('SELECT * FROM users WHERE email = $1', [
+          username,
+        ]);
+
+        if (!user.rows[0]) {
+          // If not throw a login error
+          console.log('No User');
+          return done(null, false, { msg: 'Oops! Incorrect login details' });
+        } else if (!user.rows[0].password) {
+          const salt = await bcrypt.genSalt(10);
+          const password_hash = await bcrypt.hash(password, salt);
+          user = await client.query(
+            'UPDATE users SET password = $1 WHERE email = $2 RETURNING *',
+            [password_hash, username]
+          );
+          return done(null, user.rows[0]);
+        } else {
+          const isMatch = await bcrypt.compare(password, user.rows[0].password);
+          if (!isMatch) {
+            return done(null, false, { msg: 'Oops! Incorrect login details' });
+          }
+          delete user.rows[0].password;
+          done(null, user.rows[0]);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        client.release();
+      }
+    }
+  )
+);
 
 passport.use(
   new GoogleStrategy(

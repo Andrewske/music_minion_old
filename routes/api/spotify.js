@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../../middleware/auth');
 const spotify = require('../../components/spotify');
 const tags = require('../../components/tags');
 
@@ -20,10 +19,10 @@ const { addPlaylistTracks } = require('../../models/playlist_track');
 // @route   GET api/spotify/import/playlists
 // @desc    Import all the users playlists into the DB
 // @access  Private
-router.get('/import/playlist/all', auth, async (req, res) => {
+router.get('/import/playlist/all', async (req, res) => {
   try {
     //Get the User info from DB
-    const user = await getUser(req.user.id);
+    const user = await getUser(req.user.user_id);
     let { user_id, spotify_id } = user;
 
     //Check that the Spotify Access is valid then Get the users playlists
@@ -75,10 +74,10 @@ router.get('/import/playlist/all', auth, async (req, res) => {
 // @route   GET api/spotify/import/playlists/track
 // @desc    Import all the users tracks from playlists into the DB
 // @access  Private
-router.get('/import/playlist/track/:playlist_id', auth, async (req, res) => {
+router.get('/import/playlist/track/:playlist_id', async (req, res) => {
   try {
     // Get the User info from DB
-    const user = await getUser(req.user.id);
+    const user = await getUser(req.user.user_id);
     let { user_id, spotify_id } = user;
 
     // Get the playlist_id from params
@@ -168,9 +167,9 @@ router.get('/import/playlist/track/:playlist_id', auth, async (req, res) => {
 // @desc    Get the artist info and genre tags
 // @access  Private
 
-router.get('/import/artist/:artist_id', auth, async (req, res) => {
+router.get('/import/artist/:artist_id', async (req, res) => {
   //Get the User info from DB
-  const user = await getUser(req.user.id);
+  const user = await getUser(req.user.user_id);
   let { user_id, spotify_id } = user;
 
   let access_token = await spotify.checkAuth(user_id);

@@ -8,29 +8,16 @@ import Login from './components/auth/Login';
 import Explore from './components/layout/Explore';
 import ImportLibrary from './components/layout/ImportLibrary';
 import Settings from './components/layout/Settings';
-import SocialLogin from './components/auth/SocialLogin';
 import PrivateRoute from './components/routing/PrivateRoute';
 import './App.css';
 // Redux
 import { Provider } from 'react-redux';
 import store from './store';
 import { loadUser } from './actions/auth';
-import setAuthToken from './utils/setAuthToken';
-
-if (localStorage.token) {
-  setAuthToken(localStorage.token);
-}
 
 const App = () => {
-  const entry_url = window.location.href;
-  const exp = new RegExp('/auth/login');
-
   useEffect(() => {
-    if (!entry_url.match(exp)) {
-      store.dispatch(loadUser());
-    } else {
-      console.log('Social Page!');
-    }
+    store.dispatch(loadUser());
   }, []);
 
   return (
@@ -43,7 +30,6 @@ const App = () => {
             <Alert />
             <ImportLibrary />
             <Switch>
-              <Route exact path='/auth/login' component={SocialLogin} />
               <Route exact path='/register' component={Register} />
               <Route exact path='/login' component={Login} />
               <PrivateRoute exact path='/explore' component={Explore} />

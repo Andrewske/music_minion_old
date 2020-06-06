@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import { login } from '../../actions/auth';
 import { Link, Redirect } from 'react-router-dom';
 import SpotifyLoginButton from './SpotifyLoginButton';
+import { setAlert } from '../../actions/alert';
 
-const Login = ({ login, isAuthenticated }) => {
+const Login = ({ login, setAlert, isAuthenticated }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -66,6 +67,7 @@ const Login = ({ login, isAuthenticated }) => {
 
 Login.propTypes = {
   login: PropTypes.func.isRequired,
+  setAlert: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
 };
 
@@ -73,4 +75,4 @@ const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
 });
 
-export default connect(mapStateToProps, { login })(Login);
+export default connect(mapStateToProps, { login, setAlert })(Login);

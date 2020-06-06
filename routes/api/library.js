@@ -12,7 +12,7 @@ const pagination = require('../../middleware/pagination');
 router.get('/playlist/me', auth, async (req, res) => {
   try {
     //Get the User info from DB
-    const user = await getUser(req.user.id);
+    const user = await getUser(req.user.user_id);
     let { user_id, spotify_id } = user;
 
     let playlists = pagination('playlist');

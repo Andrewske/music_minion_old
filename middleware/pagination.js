@@ -4,7 +4,7 @@ const pool = require('../config/db');
 module.exports = function (model) {
   return async (req, res, next) => {
     try {
-      const user_id = req.user.id;
+      const user_id = req.user.user_id;
       const page = parseInt(req.query.page) || null;
       const limit = parseInt(req.query.limit) || null;
       const startIndex = (page - 1) * limit || null;
