@@ -5,6 +5,7 @@ import Landing from './components/layout/Landing';
 import Alert from './components/layout/Alert';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
+import AudioFeatures from './components/library/AudioFeatures';
 import Explore from './components/layout/Explore';
 import ImportLibrary from './components/layout/ImportLibrary';
 import Settings from './components/layout/Settings';
@@ -32,6 +33,7 @@ const App = () => {
             <Switch>
               <Route exact path='/register' component={Register} />
               <Route exact path='/login' component={Login} />
+              <Route exact path='/audio' component={AudioFeatures} />
               <PrivateRoute exact path='/explore' component={Explore} />
               <PrivateRoute exact path='/settings' component={Settings} />
             </Switch>

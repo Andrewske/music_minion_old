@@ -16,11 +16,13 @@ const PlaylistItem = ({
     getTracks(playlist);
   };
   return (
-    <span style={{ cursor: 'pointer' }} onClick={() => onClick()}>
-      <p className='playlist-name' id={playlist_id}>
-        {name}
-      </p>
-    </span>
+    <div className='track-item'>
+      <span style={{ cursor: 'pointer' }} onClick={() => onClick()}>
+        <p className='track-text' id={playlist_id}>
+          {name}
+        </p>
+      </span>
+    </div>
   );
 };
 //        <Img className='playlist-item-img' src={img_url} loading={Loader} />

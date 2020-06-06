@@ -33,7 +33,7 @@ const Playlists = ({ getPlaylists, playlist: { playlists, loading } }) => {
 
 Playlists.propTypes = {
   getPlaylists: PropTypes.func.isRequired,
-  playlists: PropTypes.object.isRequired,
+  playlist: PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
