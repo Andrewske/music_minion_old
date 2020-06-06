@@ -57,6 +57,7 @@ exports.addArtistTrack = async (artist_id, track_id) => {
     );
     return artistTrack.rows[0];
   } catch (err) {
+    return null;
     console.error(err.message);
   }
 };

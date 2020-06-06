@@ -84,3 +84,22 @@ exports.updateArtist = async (artist_id, followers, img_url, popularity) => {
     console.error(err);
   }
 };
+
+exports.getTrackArtists = async (track_id) => {
+  try {
+    artists = await pool.query(
+      `
+      SELECT artist.artist_id, artist.name FROM track
+      INNER JOIN artist_track on artist_track.track_id = track.track_id
+      INNER JOIN artist on artist_track.artist_id = artist.artist_id
+      WHERE track.track_id = $1
+      `,
+      [track_id]
+    );
+    console.log(artists.rows);
+    return artists.rows;
+  } catch (err) {
+    return null;
+    console.error(`Error getting track artists: ${err.message}`);
+  }
+};

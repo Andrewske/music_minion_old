@@ -1,28 +1,27 @@
 //const { getAllUserPlaylists } = require('../../models/playlist');
 const pool = require('../config/db');
 
-module.exports = function (model) {
+module.exports = function (model1, model2) {
   return async (req, res, next) => {
     try {
-      const user_id = req.user.user_id;
+      const id = req.params.id || req.user.user_id;
       const page = parseInt(req.query.page) || null;
       const limit = parseInt(req.query.limit) || null;
       const startIndex = (page - 1) * limit || null;
-      const order = req.query.order || `${model}_id`;
+      const order = req.query.order || `${model2}_id`;
       const direction = req.query.dir === 'up' ? 'ASC' : 'DESC';
       const results = await pool.query(
-        `SELECT * FROM ${model} 
-        INNER JOIN user_${model}
-        ON ${model}.${model}_id = user_${model}.${model}_id 
-        WHERE user_${model}.user_id = $1
-        ORDER BY ${model}.${order} ${direction}
+        `SELECT * FROM ${model2} 
+        INNER JOIN ${model1}_${model2}
+        ON ${model2}.${model2}_id = ${model1}_${model2}.${model2}_id 
+        WHERE ${model1}_${model2}.${model1}_id = $1
+        ORDER BY ${model2}.${order} ${direction}
         OFFSET ${startIndex}
         LIMIT ${limit}
         `,
-        [user_id]
+        [id]
       );
-      console.log(results);
-
+      console.log('we have results!');
       res.paginatedResults = results.rows;
 
       next();

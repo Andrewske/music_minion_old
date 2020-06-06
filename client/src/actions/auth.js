@@ -15,7 +15,6 @@ import { setAlert } from './alert';
 export const loadUser = () => async (dispatch) => {
   try {
     const res = await axios.get('/api/auth');
-    console.log(res);
     dispatch({
       type: USER_LOADED,
       payload: res.data,
@@ -71,7 +70,6 @@ export const login = (email, password) => async (dispatch) => {
   const body = JSON.stringify({ email, password });
   try {
     const res = await axios.post('/api/auth/login', body, config);
-    console.log(res);
     dispatch({
       type: LOGIN_SUCCESS,
       payload: res.data,

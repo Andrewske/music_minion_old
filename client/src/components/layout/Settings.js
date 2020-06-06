@@ -1,6 +1,5 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import SpotifySettings from '../settings-forms/SpotifySettings';
 //import LOADER from '../layout/Spinner'
 
@@ -11,7 +10,5 @@ const Settings = () => {
     </Fragment>
   );
 };
-
-Settings.propTypes = {};
 
 export default connect(null, null)(Settings);

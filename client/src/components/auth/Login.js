@@ -24,7 +24,7 @@ const Login = ({ login, setAlert, isAuthenticated }) => {
 
   // Redirect if logged in
   if (isAuthenticated) {
-    return <Redirect to='/dashboard' />;
+    return <Redirect to='/explore' />;
   }
 
   return (

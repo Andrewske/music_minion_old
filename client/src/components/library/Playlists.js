@@ -1,9 +1,12 @@
 import React, { Fragment, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+
 import { getPlaylists } from '../../actions/playlist';
-import store from '../../store';
 import { loadUser } from '../../actions/auth';
+import PlaylistItem from './PlaylistItem';
+import Loader from '../layout/Loader';
+import store from '../../store';
 
 const Playlists = ({ getPlaylists, playlist: { playlists, loading } }) => {
   useEffect(() => {
@@ -15,10 +18,17 @@ const Playlists = ({ getPlaylists, playlist: { playlists, loading } }) => {
     load();
   }, [getPlaylists]);
 
-  const loadFirst = async () => {
-    let user = await loadUser();
-  };
-  return <h1>Hello!</h1>;
+  return loading ? (
+    <Loader />
+  ) : (
+    <Fragment>
+      <div className='item-list'>
+        {playlists.map((playlist) => (
+          <PlaylistItem key={playlist.playlist_id} playlist={playlist} />
+        ))}
+      </div>
+    </Fragment>
+  );
 };
 
 Playlists.propTypes = {

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { setAlert } from './alert';
+//import { setAlert } from './alert';
 import {
   IMPORT_START,
   IMPORT_END,
@@ -39,7 +39,7 @@ export const importPlaylists = ({ limit, owner }) => async (dispatch) => {
 
 export const importTracks = (playlist_data) => async (dispatch) => {
   try {
-    const asyncRes = await Promise.all(
+    await Promise.all(
       playlist_data.map(async ({ playlist_id }) => {
         try {
           const res = await axios.get(
@@ -58,7 +58,7 @@ export const importTracks = (playlist_data) => async (dispatch) => {
       })
     );
   } catch (err) {
-    console.error(err.message);
+    console.error(`Error importing tracks: ${err.message}`);
     dispatch({
       type: IMPORT_ERROR,
       payload: { msg: err },
