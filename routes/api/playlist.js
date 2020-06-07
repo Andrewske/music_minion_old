@@ -6,6 +6,7 @@ const {
   getTrackAudioFeatures,
   getPlaylistAudioFeatures,
 } = require('../../models/audio_features');
+const { getTrackTags } = require('../../models/tag');
 const pagination = require('../../middleware/pagination');
 
 // @route   GET api/playlist/me
@@ -31,6 +32,8 @@ router.get('/:id', pagination('playlist', 'track'), async (req, res) => {
       res.paginatedResults.map(async (track) => {
         let artists = await getTrackArtists(track.track_id);
         let audio_features = await getTrackAudioFeatures(track.track_id);
+        let tags = await getTrackTags(track.track_id);
+        track.tags = tags;
         track.artists = artists;
         track.audio_features = audio_features;
         return track;

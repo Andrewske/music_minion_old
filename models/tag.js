@@ -33,3 +33,20 @@ exports.addTag = async (name, type) => {
     console.error(err.message);
   }
 };
+
+exports.getTrackTags = async (track_id) => {
+  try {
+    tags = await pool.query(
+      `
+      SELECT * FROM tag
+      INNER JOIN track_tag on track_tag.tag_id = tag.tag_id
+      WHERE track_tag.track_id = $1
+      `,
+      [track_id]
+    );
+    return tags.rows;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};

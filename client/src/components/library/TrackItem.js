@@ -1,14 +1,14 @@
 import React, { Fragment, useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
+
 import AudioFeatures from './AudioFeatures';
+import Tags from './Tags';
 
-//import Moment from 'react-moment';
-//import { Img } from 'react-image';
-//import Loader from '../layout/Loader';
-
-const TrackItem = ({ track: { track_id, name, artists, audio_features } }) => {
+const TrackItem = ({
+  track: { track_id, name, artists, audio_features, tags },
+}) => {
   const [showTrack, setShowTrack] = useState(false);
 
   const onClick = (e) => {
@@ -18,7 +18,11 @@ const TrackItem = ({ track: { track_id, name, artists, audio_features } }) => {
   return (
     <Fragment>
       <div className='track-item'>
-        <span style={{ cursor: 'pointer' }} onClick={(e) => onClick(e)}>
+        <span
+          id='show-track'
+          style={{ cursor: 'pointer' }}
+          onClick={(e) => onClick(e)}
+        >
           <p className='track-text' id={track_id}>
             {name} by{' '}
             {artists &&
@@ -27,6 +31,7 @@ const TrackItem = ({ track: { track_id, name, artists, audio_features } }) => {
               ))}
           </p>
         </span>
+        <Tags track_id={track_id} track_tags={tags} />
       </div>
       {showTrack && <AudioFeatures features={audio_features} />}
     </Fragment>

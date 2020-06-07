@@ -45,12 +45,14 @@ export const getTracks = (playlist) => async (dispatch) => {
 };
 
 export const clearTracks = () => (dispatch) => {
+  console.log('Dispatching the action');
   try {
     dispatch({
       type: CLEAR_TRACKS,
-      payload: {},
+      payload: null,
     });
   } catch (err) {
+    console.log('Error here?');
     console.error(err);
   }
 };

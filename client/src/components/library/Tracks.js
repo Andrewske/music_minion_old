@@ -6,6 +6,7 @@ import { clearTracks } from '../../actions/library';
 import Loader from '../layout/Loader';
 import TrackItem from './TrackItem';
 import AudioFeatures from './AudioFeatures';
+import { CLEAR_TRACKS } from '../../actions/types';
 
 const Tracks = ({
   clearTracks,
@@ -15,6 +16,11 @@ const Tracks = ({
   playlist: { name },
 }) => {
   const onClick = (e) => {
+    console.log('Clearing tracks?');
+    // dispatch({
+    //   type: CLEAR_TRACKS,
+    //   payload: null,
+    // });
     clearTracks();
   };
   return loading && tracks.length > 0 ? (
