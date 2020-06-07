@@ -711,3 +711,9 @@ button {
   margin: 0px auto !important;
   padding-left: 5px;
 }
+
+.audio-icon {
+  max-width: 70%;
+  margin: auto;
+  fill: black;
+}

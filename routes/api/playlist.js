@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getTrackArtists } = require('../../models/artist');
+const { getTrackAudioFeatures } = require('../../models/audio_features');
 const pagination = require('../../middleware/pagination');
 
 // @route   GET api/playlist/me
@@ -23,13 +24,13 @@ router.get('/:id', pagination('playlist', 'track'), async (req, res) => {
   try {
     let tracks = await Promise.all(
       res.paginatedResults.map(async (track) => {
-        console.log(track);
         artists = await getTrackArtists(track.track_id);
+        audio_features = await getTrackAudioFeatures(track.track_id);
         track.artists = artists;
+        track.audio_features = audio_features;
         return track;
       })
     );
-    console.log(tracks);
     return res.status(200).json(tracks);
   } catch (err) {
     console.error(err);

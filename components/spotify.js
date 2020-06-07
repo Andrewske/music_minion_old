@@ -124,12 +124,13 @@ exports.getArtistInfo = async (artist_id, access_token) => {
   }
 };
 
-exports.getAudioFeatures = async (track_id, access_token) => {
+exports.getAudioFeatures = async (track_ids, access_token) => {
   try {
     const res = await axios({
       method: 'get',
-      url: `https://api.spotify.com/v1/audio-features/${track_id}`,
+      url: `https://api.spotify.com/v1/audio-features?ids=${track_ids}`,
       params: { access_token },
+      //body: { ids: track_ids },
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },

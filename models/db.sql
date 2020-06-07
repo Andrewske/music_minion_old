@@ -42,7 +42,7 @@ CREATE TABLE playlist (
 CREATE TABLE track (
     track_id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
-    popularity INTEGER
+    popularity INTEGER,
 );
 
 CREATE TABLE artist (
@@ -58,6 +58,24 @@ CREATE TABLE tag (
     name text NOT NULL,
     type text NOT NULL,
     UNIQUE (name, type)
+);
+
+CREATE TABLE audio_features (
+    track_id TEXT NOT NULL REFERENCES track(track_id),
+    duration_ms INTEGER,
+    track_key INTEGER,
+    mode INTEGER,
+    time_signature INTEGER,
+    acousticness DECIMAL,
+    danceability DECIMAL,
+    energy DECIMAL,
+    instrumentalness DECIMAL,
+    liveness DECIMAL,
+    loudness DECIMAL,
+    speechiness DECIMAL,
+    valence DECIMAL,
+    tempo DECIMAL,
+    UNIQUE(track_id)
 );
 
 

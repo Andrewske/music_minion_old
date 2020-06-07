@@ -13,6 +13,7 @@ const { addUserArtists } = require('../../models/user_artist');
 const { addArtists, updateArtist } = require('../../models/artist');
 const { addArtistTracks } = require('../../models/artist_track');
 const { addPlaylistTracks } = require('../../models/playlist_track');
+const { addAudioFeatures } = require('../../models/audio_features');
 
 // ROUTES
 
@@ -88,7 +89,15 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
 
     // Get the playlist tracks from Spotify
     let tracks = await spotify.getPlaylistTracks(playlist_id, access_token);
-
+    const track_ids = tracks
+      .map((t) => {
+        try {
+          return t.track.id;
+        } catch (err) {
+          return null;
+        }
+      })
+      .filter((id) => id != null);
     // Format the track info
     let track_info = [];
     let artist_info = [];
@@ -145,6 +154,16 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
     // Add the playlist track references
     const newPlaylistTracks = await addPlaylistTracks(track_info);
 
+    // Get the tracks audio features
+    const audioFeatures = await spotify.getAudioFeatures(
+      track_ids,
+      access_token
+    );
+    // Add Audio features to the db
+    const audio_features = await addAudioFeatures(
+      audioFeatures['audio_features']
+    );
+
     res.status(200).json({
       total_tracks: tracks.length,
       total_artists: artist_info.length,
@@ -154,6 +173,7 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
       new_artist_tracks: newArtistTracks.length,
       new_user_artists: newUserArtists.length,
       new_playlist_tracks: newPlaylistTracks.length,
+      new_audio_features: audio_features.length,
       errors,
     });
   } catch (err) {
