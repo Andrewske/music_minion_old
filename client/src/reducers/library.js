@@ -8,6 +8,7 @@ import {
 const initialState = {
   user: null,
   playlist: null,
+  playlist_features: {},
   playlists: [],
   tracks: [],
   artists: [],
@@ -29,7 +30,8 @@ export default function (state = initialState, action) {
       return {
         ...state,
         playlist: payload.playlist,
-        tracks: payload.data,
+        tracks: payload.data.tracks,
+        playlist_features: payload.data.playlist_features,
         loading: false,
       };
     case CLEAR_TRACKS:
