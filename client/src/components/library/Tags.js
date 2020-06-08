@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { addTrackTag } from '../../actions/tags';
+import { addTrackTag, removeTrackTag } from '../../actions/tags';
 import styled from 'styled-components';
 
 const _ = require('lodash');
 
-export const Tags = ({ user_id, track_id, addTrackTag, track_tags = [] }) => {
+export const Tags = ({
+  user_id,
+  track_id,
+  addTrackTag,
+  removeTrackTag,
+  track_tags = [],
+}) => {
   const [tagData, setTagData] = useState({
     tag: '',
     tags: track_tags,
@@ -13,7 +19,18 @@ export const Tags = ({ user_id, track_id, addTrackTag, track_tags = [] }) => {
   });
 
   const onClick = (e) => {
-    setTagData({ ...tagData, addTag: true });
+    console.log(e.target.title);
+    switch (e.target.title) {
+      case 'addTag':
+        return setTagData({ ...tagData, addTag: true });
+      case 'removeTag':
+        let tag = tags.filter((tag) => tag.tag_id === e.target.id)[0];
+        removeTrackTag({ tag, track_id, user_id });
+        return setTagData({
+          ...tagData,
+          tags: tags.filter((t) => t !== tag),
+        });
+    }
   };
 
   const onChange = (e) => {
@@ -46,7 +63,15 @@ export const Tags = ({ user_id, track_id, addTrackTag, track_tags = [] }) => {
         tags.map((tag) => (
           <div key={tag.name} className={`tag ${tag.type}`}>
             <p className={`tag-text`}>#{tag.name}</p>
-            <i className='icon material-icons cancel'>cancel</i>
+            <i
+              className='icon material-icons cancel'
+              id={tag.tag_id}
+              title='removeTag'
+              style={{ cursor: 'pointer' }}
+              onClick={(e) => onClick(e)}
+            >
+              cancel
+            </i>
           </div>
         ))}
       {!addTag && (
@@ -64,6 +89,7 @@ export const Tags = ({ user_id, track_id, addTrackTag, track_tags = [] }) => {
           <input
             type='text'
             placeholder='#tag'
+            title='addTag'
             name='tag'
             value={tag}
             className='tag-input'
@@ -81,4 +107,4 @@ const mapStateToProps = (state) => ({
   user_id: state.auth.user.user_id,
 });
 
-export default connect(mapStateToProps, { addTrackTag })(Tags);
+export default connect(mapStateToProps, { addTrackTag, removeTrackTag })(Tags);

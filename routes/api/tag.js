@@ -31,8 +31,9 @@ router.post('/track', async (req, res) => {
 // @access  Private
 
 router.delete('/track', async (req, res) => {
+  console.log(req.body);
   try {
-    const response = await tags.RemoveTrackTag(req.body);
+    const response = await tags.deleteTrackTag(req.body);
 
     res.status(200).json({ msg: response });
   } catch (err) {
