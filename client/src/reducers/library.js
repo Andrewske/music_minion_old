@@ -35,7 +35,6 @@ export default function (state = initialState, action) {
         loading: false,
       };
     case CLEAR_TRACKS:
-      console.log('action dispatched');
       return {
         ...state,
         playlist: null,

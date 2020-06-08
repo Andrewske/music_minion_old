@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { addTrackTag } from '../../actions/tags';
+import styled from 'styled-components';
 
 const _ = require('lodash');
 
@@ -28,7 +29,6 @@ export const Tags = ({ user_id, track_id, addTrackTag, track_tags = [] }) => {
         name = type;
         type = 'misc';
       }
-      console.log(type);
       tag = { type, name: _(name).snakeCase() };
     } catch (err) {
       tag = { type: 'misc', name: _(tag).snakeCase() };
@@ -44,17 +44,17 @@ export const Tags = ({ user_id, track_id, addTrackTag, track_tags = [] }) => {
     <div className='tag-box'>
       {tags &&
         tags.map((tag) => (
-          <span key={tag.name} className={`tag ${tag.type}`}>
-            <i className='icon material-icons hashtag'>#</i>
-            <p className={`tag-text`}>{tag.name}</p>
+          <div key={tag.name} className={`tag ${tag.type}`}>
+            <p className={`tag-text`}>#{tag.name}</p>
             <i className='icon material-icons cancel'>cancel</i>
-          </span>
+          </div>
         ))}
       {!addTag && (
         <span
           id='add-tag'
           style={{ cursor: 'pointer', color: '#05FFFF' }}
           onClick={(e) => onClick(e)}
+          className='tag-input'
         >
           Add a tag
         </span>

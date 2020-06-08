@@ -1,8 +1,8 @@
-const pool = require('../config/db');
+const { query } = require('../config/db');
 
 exports.getArtistTag = async (artist_id, tag_id) => {
   try {
-    const artistTag = await pool.query(
+    const artistTag = await query(
       'SELECT * FROM artist_tag WHERE artist_id = $1 and tag_id = $2',
       [artist_id, tag_id]
     );
@@ -19,7 +19,7 @@ exports.getArtistTag = async (artist_id, tag_id) => {
 
 exports.addArtistTag = async (artist_id, user_id, tag_id) => {
   try {
-    artistTag = await pool.query(
+    artistTag = await query(
       `
             INSERT INTO artist_tag
             (artist_id, user_id, tag_id)

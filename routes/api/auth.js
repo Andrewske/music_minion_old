@@ -1,6 +1,7 @@
 const express = require('express');
-const router = express.Router();
-const pool = require('../../config/db');
+const Router = require('express-promise-router');
+const router = new Router();
+const { query } = require('../../config/db');
 const passport = require('passport');
 const CLIENT_LOGIN_REDIRECT = 'http://localhost:3000/explore';
 
@@ -9,7 +10,7 @@ const CLIENT_LOGIN_REDIRECT = 'http://localhost:3000/explore';
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const user = await pool.query('SELECT * FROM users WHERE user_id = $1', [
+    const user = await query('SELECT * FROM users WHERE user_id = $1', [
       req.user.user_id,
     ]);
 

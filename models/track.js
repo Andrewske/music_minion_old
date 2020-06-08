@@ -1,11 +1,7 @@
-const pool = require('../config/db');
-const { upsertQuery } = require('./queries');
+const { query } = require('../config/db');
 
 exports.addTracks = async (track_info) => {
-  const client = await pool.connect();
-
   try {
-    await client.query('BEGIN');
     const asyncRes = await Promise.all(
       track_info.map(async ({ track_id, name, popularity }) => {
         const insertText = `
@@ -16,35 +12,19 @@ exports.addTracks = async (track_info) => {
             SET name = EXCLUDED.name, popularity = EXCLUDED.popularity
             RETURNING *`;
         const insertValues = [track_id, name, popularity];
-        const res = await client.query(insertText, insertValues);
+        const res = await query(insertText, insertValues);
         return res.rows;
       })
     );
-    await client.query('COMMIT');
     return asyncRes;
   } catch (e) {
-    await client.query('ROLLBACK');
     throw e;
-  } finally {
-    await client.release();
   }
-};
-
-exports.upsertTrack = async (track_id, name, popularity) => {
-  const insertQuery = {
-    text: 'INSERT INTO track (track_id, name, popularity) VALUES ($1, $2, $3)',
-    values: [track_id, name, popularity],
-  };
-  const updateQuery = {
-    text: 'UPDATE track SET name = $2, popularity = $3 WHERE track_id = $1',
-    values: [track_id, name, popularity],
-  };
-  return await upsertQuery(updateQuery, insertQuery);
 };
 
 exports.getTrack = async (track_id) => {
   try {
-    const track = await pool.query('SELECT * FROM track WHERE track_id = $1', [
+    const track = await query('SELECT * FROM track WHERE track_id = $1', [
       track_id,
     ]);
     if (track.rows.length > 0) {
@@ -59,8 +39,7 @@ exports.getTrack = async (track_id) => {
 
 exports.addTrack = async (track_id, name, popularity) => {
   try {
-    console.log(`Track_id ${track_id}`);
-    track = await pool.query(
+    track = await query(
       `
         INSERT INTO track
         (track_id, name, popularity)
@@ -79,7 +58,7 @@ exports.addTrack = async (track_id, name, popularity) => {
 
 exports.updateTrack = async (track_id, name, popularity) => {
   try {
-    track = await pool.query(
+    track = await query(
       `
         UPDATE track
         SET name = $2, popularity = $3
@@ -97,7 +76,7 @@ exports.updateTrack = async (track_id, name, popularity) => {
 
 exports.getUserTracks = async (user_id) => {
   try {
-    playlists = pool.query(
+    playlists = query(
       `
       SELECT * FROM playlist
       INNER JOIN user_playlist ON playlist.playlist_id = user_playlist.playlist_id

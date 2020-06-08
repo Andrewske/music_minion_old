@@ -1,7 +1,6 @@
 const cookieSession = require('cookie-session');
 const cookieParser = require('cookie-parser');
 const express = require('express');
-const pool = require('./config/db');
 const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
 const cors = require('cors');
@@ -12,6 +11,21 @@ app.get('/', (req, res) => res.send('API Running'));
 
 const PORT = process.env.PORT || 5000;
 
+// const apiTimeout = 10 * 1000;
+// app.use((req, res, next) => {
+//   // Set the timeout for all HTTP requests
+//   req.setTimeout(apiTimeout, () => {
+//     let err = new Error('Request Timeout');
+//     err.status = 408;
+//     next(err);
+//   });
+//   // Set the server response timeout for all HTTP requests
+//   res.setTimeout(apiTimeout, () => {
+//     let err = new Error('Service Unavailable');
+//     err.status = 503;
+//     next(err);
+//   });
+// });
 // Cookie Session
 app.use(
   cookieSession({

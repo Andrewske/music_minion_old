@@ -75,9 +75,8 @@ export const login = (email, password) => async (dispatch) => {
       payload: res.data,
     });
   } catch (err) {
-    console.log(err);
-    console.log('We caught an error?');
-    console.log(err.response);
+    console.log('Error with login');
+    console.error(err.message);
     const errors = err.response.data.errors;
 
     if (errors) {

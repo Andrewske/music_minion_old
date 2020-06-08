@@ -16,11 +16,6 @@ const Tracks = ({
   playlist: { name },
 }) => {
   const onClick = (e) => {
-    console.log('Clearing tracks?');
-    // dispatch({
-    //   type: CLEAR_TRACKS,
-    //   payload: null,
-    // });
     clearTracks();
   };
   return loading && tracks.length > 0 ? (

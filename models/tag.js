@@ -44,7 +44,9 @@ exports.getTrackTags = async (track_id) => {
       `,
       [track_id]
     );
-    return tags.rows;
+    let results = {};
+    results[track_id] = tags.rows;
+    return results;
   } catch (err) {
     console.error(err);
     return null;

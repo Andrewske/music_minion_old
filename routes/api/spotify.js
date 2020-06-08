@@ -1,5 +1,6 @@
 const express = require('express');
-const router = express.Router();
+const Router = require('express-promise-router');
+const router = new Router();
 const spotify = require('../../components/spotify');
 const tags = require('../../components/tags');
 
@@ -32,13 +33,11 @@ router.get('/import/playlist/all', async (req, res) => {
     const limit = parseInt(req.query.limit) || null;
     const owner = req.query.owner || null;
     if (owner === 'owner') {
-      console.log('limiting to user owned playlists');
       playlists = playlists.filter(
         (playlist) => playlist.owner.id === spotify_id
       );
     }
     if (limit) {
-      console.log(`limiting playlists to: ${limit}`);
       playlists = playlists.slice(0, limit);
     }
 
@@ -79,6 +78,7 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
   try {
     // Get the User info from DB
     const user = await getUser(req.user.user_id);
+    console.log('got user');
     let { user_id, spotify_id } = user;
 
     // Get the playlist_id from params
@@ -86,9 +86,10 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
 
     // Check that the Spotify Access is valid then Get the users playlists
     let access_token = await spotify.checkAuth(user_id);
-
+    console.log('checked auth');
     // Get the playlist tracks from Spotify
     let tracks = await spotify.getPlaylistTracks(playlist_id, access_token);
+    console.log('got tracks');
     const track_ids = tracks
       .map((t) => {
         try {
@@ -138,7 +139,7 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
 
     // Add tracks to the database
     const newTracks = await addTracks(track_info);
-
+    console.log('new tracks');
     // Add the user track record
     const userTracks = await addUserTracks(track_info);
 
@@ -176,6 +177,7 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
       new_audio_features: audio_features.length,
       errors,
     });
+    console.log('We made it here?');
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

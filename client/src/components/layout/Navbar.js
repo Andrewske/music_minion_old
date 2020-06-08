@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth';
+import Loader from './Loader';
 
 const Navbar = ({
   auth: { isAuthenticated, loading },
@@ -12,9 +13,10 @@ const Navbar = ({
   const authLinks = (
     <ul>
       <li>
-        <Link to='/settings'>
-          <i className='fas fa-code'></i> Settings
-        </Link>
+        <Link to='/explore'>Explore</Link>
+      </li>
+      <li>
+        <Link to='/settings'>Settings</Link>
       </li>
       <li>
         <a onClick={logout} href='/login'>
@@ -31,9 +33,8 @@ const Navbar = ({
     <Fragment>
       <nav className={hidden ? 'hidden' : 'navbar'}>
         <h1>
-          <Link to='/'>
-            <i className='fas fa-code'></i> Music Minion
-          </Link>
+          {/* <Loader /> */}
+          <Link to='/'>Music Minion</Link>
         </h1>
         {!loading && (
           <Fragment>{isAuthenticated ? authLinks : guestLinks}</Fragment>

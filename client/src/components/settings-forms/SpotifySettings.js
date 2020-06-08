@@ -17,7 +17,6 @@ const SpotifySettings = ({ startImport }) => {
 
   const onClick = (e) => {
     e.preventDefault();
-    console.log('run this');
     startImport(formData);
   };
 

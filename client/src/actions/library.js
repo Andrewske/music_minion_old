@@ -27,10 +27,8 @@ export const getPlaylists = () => async (dispatch) => {
 };
 
 export const getTracks = (playlist) => async (dispatch) => {
-  console.log('this is happening');
   try {
     const res = await axios.get(`/api/playlist/${playlist.playlist_id}`);
-    console.log(res.data);
     dispatch({
       type: LOAD_TRACKS,
       payload: { playlist, data: res.data },
@@ -45,14 +43,13 @@ export const getTracks = (playlist) => async (dispatch) => {
 };
 
 export const clearTracks = () => (dispatch) => {
-  console.log('Dispatching the action');
   try {
     dispatch({
       type: CLEAR_TRACKS,
       payload: null,
     });
   } catch (err) {
-    console.log('Error here?');
+    console.log('Error Clearing Tracks');
     console.error(err);
   }
 };

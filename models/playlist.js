@@ -1,10 +1,7 @@
-const pool = require('../config/db');
+const { query } = require('../config/db');
 
 exports.addPlaylists = async (playlist_info) => {
-  const client = await pool.connect();
-
   try {
-    await client.query('BEGIN');
     const asyncRes = await Promise.all(
       playlist_info.map(
         async ({ playlist_id, name, owner, img_url, size, platform }) => {
@@ -23,28 +20,23 @@ exports.addPlaylists = async (playlist_info) => {
             size,
             platform,
           ];
-          const res = await client.query(insertText, insertValues);
+          const res = await query(insertText, insertValues);
           return res.rows;
         }
       )
     );
-    await client.query('COMMIT');
     return asyncRes;
   } catch (e) {
-    await client.query('ROLLBACK');
     throw e;
-  } finally {
-    await client.release();
   }
 };
 
 exports.getPlaylist = async (playlist_id) => {
   try {
-    const playlist = await pool.query(
+    const playlist = await query(
       'SELECT * FROM playlist WHERE playlist_id = $1',
       [playlist_id]
     );
-    //console.log(playlist_id);
     if (playlist.rows.length > 0) {
       return playlist.rows[0];
     } else {
@@ -58,8 +50,7 @@ exports.getPlaylist = async (playlist_id) => {
 
 exports.getAllUserPlaylists = async (user_id) => {
   try {
-    console.log(user_id);
-    const playlists = await pool.query(
+    const playlists = await query(
       `
       SELECT playlist.playlist_id, name, img_url
       FROM playlist 
@@ -71,7 +62,6 @@ exports.getAllUserPlaylists = async (user_id) => {
     if (playlists.rows.length > 0) {
       return playlists.rows;
     } else {
-      console.log('false');
       return false;
     }
   } catch (err) {
@@ -88,7 +78,7 @@ exports.addPlaylist = async ({
   platform,
 }) => {
   try {
-    playlist = await pool.query(
+    playlist = await query(
       `
         INSERT INTO playlist
         (playlist_id, name, owner, img_url, size, platform)
@@ -114,7 +104,7 @@ exports.updatePlaylist = async ({
   platform,
 }) => {
   try {
-    playlist = await pool.query(
+    playlist = await query(
       `
         UPDATE playlist
         SET name = $2, owner = $3, img_url = $4, size = $5, platform = $6
@@ -125,14 +115,6 @@ exports.updatePlaylist = async ({
     );
     return playlist.rows[0];
   } catch (err) {
-    console.log({
-      playlist_id,
-      name,
-      owner,
-      img_url,
-      size,
-      platform,
-    });
     console.log('Error Updating Playlist');
     console.error(err);
   }
@@ -140,7 +122,7 @@ exports.updatePlaylist = async ({
 
 exports.getUserPlaylists = async (user_id) => {
   try {
-    playlists = pool.query(
+    playlists = query(
       `
       SELECT * FROM playlist
       INNER JOIN user_playlist ON playlist.playlist_id = user_playlist.playlist_id

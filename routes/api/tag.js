@@ -1,10 +1,9 @@
 const express = require('express');
-const router = express.Router();
+const Router = require('express-promise-router');
+const router = new Router();
 
 const pagination = require('../../middleware/pagination');
-const spotify = require('../../components/spotify');
 const tags = require('../../components/tags');
-const pool = require('../../config/db');
 
 // Model Imports
 
@@ -19,6 +18,23 @@ router.post('/track', async (req, res) => {
     const newTag = await tags.createTrackTag(req.body);
 
     res.status(200).json(newTag);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err);
+  }
+});
+
+// ROUTES TO DELETE A TAG
+
+// @route   DELETE api/tag/track
+// @desc    Create a track tag with {track_id, user_id, name, type}
+// @access  Private
+
+router.delete('/track', async (req, res) => {
+  try {
+    const response = await tags.RemoveTrackTag(req.body);
+
+    res.status(200).json({ msg: response });
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

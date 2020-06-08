@@ -1,7 +1,8 @@
 const express = require('express');
-const router = express.Router();
+const Router = require('express-promise-router');
+const router = new Router();
 const auth = require('../../middleware/auth');
-
+const { getUser } = require('../../models/users');
 const pagination = require('../../middleware/pagination');
 
 // ROUTES

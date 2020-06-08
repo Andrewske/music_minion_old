@@ -1,10 +1,7 @@
-const pool = require('../config/db');
+const { query } = require('../config/db');
 
 exports.addUserPlaylists = async (playlist_data) => {
-  const client = await pool.connect();
-
   try {
-    await client.query('BEGIN');
     const asyncRes = await Promise.all(
       playlist_data.map(async ({ user_id, playlist_id }) => {
         const insertText = `
@@ -13,24 +10,20 @@ exports.addUserPlaylists = async (playlist_data) => {
             ON CONFLICT
             DO NOTHING`;
         const insertValues = [user_id, playlist_id];
-        const res = await client.query(insertText, insertValues);
+        const res = await query(insertText, insertValues);
         return res.rows;
       })
     );
-    await client.query('COMMIT');
     return asyncRes;
   } catch (e) {
-    await client.query('ROLLBACK');
     console.error('Error Inserting user_playlists');
     throw e;
-  } finally {
-    await client.release();
   }
 };
 
 exports.getUserPlaylist = async (user_id, playlist_id) => {
   try {
-    const userPlaylist = await pool.query(
+    const userPlaylist = await query(
       'SELECT * FROM user_playlist WHERE user_id = $1 and playlist_id = $2',
       [user_id, playlist_id]
     );
@@ -46,7 +39,7 @@ exports.getUserPlaylist = async (user_id, playlist_id) => {
 
 exports.addUserPlaylist = async (userId, playlistId, owner) => {
   try {
-    userPlaylist = await pool.query(
+    userPlaylist = await query(
       `
             INSERT INTO user_playlist
             (user_id, playlist_id, owner)

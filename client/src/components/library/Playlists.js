@@ -10,7 +10,6 @@ import store from '../../store';
 
 const Playlists = ({ getPlaylists, playlist: { playlists, loading } }) => {
   useEffect(() => {
-    console.log('Please get playlists');
     async function load() {
       await store.dispatch(loadUser());
       await getPlaylists();

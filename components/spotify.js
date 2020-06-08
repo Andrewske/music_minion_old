@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { spotify } = require('../config/keys');
-const pool = require('../config/db');
+
 const { getUserToken } = require('../models/user_token');
 
 // Check the Token Status
@@ -68,7 +68,7 @@ exports.getPlaylists = async (
 
     return playlists;
   } catch (err) {
-    console.log(err.message);
+    console.error(err.message);
   }
 };
 
@@ -82,7 +82,6 @@ exports.getPlaylistTracks = async (
   try {
     let total = 50;
     tracks = [];
-    console.log(`Playlist ID: ${playlist_id}`);
     while (offset < total) {
       const res = await axios({
         method: 'get',

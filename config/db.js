@@ -5,11 +5,9 @@ const pool = new Pool({
   user: config.get('db_username'),
   password: config.get('db_password'),
   host: 'localhost',
-  post: 5432,
   database: 'music_minion',
-  max: 20,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 10000,
 });
 
-module.exports = pool;
+exports.query = async (text, values) => await pool.query(text, values);

@@ -11,7 +11,8 @@ const convertAudioFeatures = (features) => {
     const featureGraph = convertFeatureGraph(features);
     return { tempo, duration, key, featureGraph };
   } catch (err) {
-    console.log(err);
+    console.log('Error converting audio features');
+    console.error(err);
     return null;
   }
 };

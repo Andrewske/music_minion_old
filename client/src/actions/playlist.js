@@ -6,9 +6,7 @@ import { LOAD_PLAYLISTS, PLAYLIST_ERROR } from './types';
 // Get current users playlists
 
 export const getPlaylists = () => async (dispatch) => {
-  console.log('Is this even called?');
   try {
-    console.log('Getting Playlists');
     const res = await axios.get('/api/playlist/me');
     dispatch({
       type: LOAD_PLAYLISTS,

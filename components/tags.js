@@ -1,8 +1,11 @@
 const { getTag, addTag } = require('../models/tag');
 const { getArtistTag, addArtistTag } = require('../models/artist_tag');
-const { getTrackTag, addTrackTag } = require('../models/track_tag');
+const {
+  getTrackTag,
+  addTrackTag,
+  removeTrackTag,
+} = require('../models/track_tag');
 const { getPlaylistTag, addPlaylistTag } = require('../models/playlist_tag');
-const pool = require('../config/db');
 
 exports.createArtistTag = async ({ artist_id, user_id, name, type }) => {
   try {
@@ -46,5 +49,19 @@ exports.createPlaylistTag = async ({ playlist_id, user_id, name, type }) => {
   } catch (err) {
     console.log('Error creating playlist tag');
     console.error(err);
+  }
+};
+
+exports.deleteTrackTag = async ({ user_id, track_id, name, type }) => {
+  try {
+    const tag = await getTag(name, type);
+
+    const track_tag = await removeTrackTag(track_id, user_id, tag.tag_id);
+
+    return 'Tag Deleted';
+  } catch (err) {
+    console.log('Error removing track tag');
+    console.error(err);
+    return 'Tag not found';
   }
 };

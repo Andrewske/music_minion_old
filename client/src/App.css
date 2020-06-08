@@ -729,6 +729,8 @@ button {
   background-color: inherit;
   border: none;
   color: white;
+  padding: 3px;
+  margin: 2px;
 }
 
 .tag {
@@ -736,7 +738,11 @@ button {
   line-height: 25px;
   justify-content: center;
   align-items: center;
-  padding-left: 5px;
+  padding: 3px;
+  margin: 2px;
+  border: 1px solid #1a1a1a;
+  border-radius: 15px;
+  background-color: #ff0000;
 }
 
 .tag-text {
@@ -751,7 +757,7 @@ button {
 }
 
 .cancel {
-  color: white !important;
+  color: black !important;
 }
 
 .hashtag {
@@ -760,5 +766,8 @@ button {
 }
 
 .genre {
-  color: green;
+  background-color: green;
+}
+.playlist {
+  background-color: #0000ff;
 }

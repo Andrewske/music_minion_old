@@ -1,10 +1,7 @@
-const pool = require('../config/db');
+const { query } = require('../config/db');
 
 exports.addUserArtists = async (artist_info) => {
-  const client = await pool.connect();
-
   try {
-    await client.query('BEGIN');
     const asyncRes = await Promise.all(
       artist_info.map(async ({ user_id, artist_id }) => {
         const insertText = `
@@ -13,24 +10,20 @@ exports.addUserArtists = async (artist_info) => {
             ON CONFLICT
             DO NOTHING`;
         const insertValues = [user_id, artist_id];
-        const res = await client.query(insertText, insertValues);
+        const res = await query(insertText, insertValues);
         return res.rows;
       })
     );
-    await client.query('COMMIT');
     return asyncRes;
   } catch (e) {
-    await client.query('ROLLBACK');
     console.error('Error Inserting user_artists');
     throw e;
-  } finally {
-    await client.release();
   }
 };
 
 exports.getUserArtist = async (user_id, artist_id) => {
   try {
-    const userArtist = await pool.query(
+    const userArtist = await query(
       'SELECT * FROM user_artist WHERE user_id = $1 and artist_id = $2',
       [user_id, artist_id]
     );
@@ -46,7 +39,7 @@ exports.getUserArtist = async (user_id, artist_id) => {
 
 exports.addUserArtist = async (user_id, artist_id) => {
   try {
-    userArtist = await pool.query(
+    userArtist = await query(
       `
             INSERT INTO user_artist
             (user_id, artist_id)

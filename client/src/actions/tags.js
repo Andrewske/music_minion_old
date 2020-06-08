@@ -8,12 +8,10 @@ export const addTrackTag = (tag, track_id, user_id) => async (dispatch) => {
       },
     };
     const { type, name } = tag;
-    console.log(`Adding the tag: ${name} with type: ${type}`);
     const body = JSON.stringify({ type, name, track_id, user_id });
     let res = await axios.post('api/tag/track', body, config);
-
-    console.log(res.data);
   } catch (err) {
+    console.log('Error adding track tag');
     console.error(err);
   }
 };

@@ -18,7 +18,6 @@ export const startImport = (formData) => (dispatch) => {
 };
 
 export const importPlaylists = ({ limit, owner }) => async (dispatch) => {
-  console.log('importing playlists');
   try {
     const res = await axios.get(
       `/api/spotify/import/playlist/all?limit=${limit}&owner=${owner}`
@@ -72,7 +71,6 @@ export const importTracks = (playlist_data) => async (dispatch) => {
 };
 
 export const endImport = () => async (dispatch) => {
-  console.log('ending the import');
   try {
     dispatch({
       type: IMPORT_END,

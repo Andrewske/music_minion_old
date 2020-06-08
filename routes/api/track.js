@@ -1,5 +1,6 @@
 const express = require('express');
-const router = express.Router();
+const Router = require('express-promise-router');
+const router = new Router();
 
 const pagination = require('../../middleware/pagination');
 

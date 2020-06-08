@@ -34,3 +34,20 @@ exports.addTrackTag = async (track_id, user_id, tag_id) => {
     console.error(err.message);
   }
 };
+
+exports.removeTrackTag = async (track_id, user_id, tag_id) => {
+  try {
+    trackTag = await pool.query(
+      `
+            DELETE FROM track_tag
+            WHERE track_id = $1 and user_id = $2 and tag_id = $3)
+            VALUES ($1, $2, $3)
+            `,
+      [track_id, user_id, tag_id]
+    );
+    return trackTag.rows[0];
+  } catch (err) {
+    console.log('Error creating track Tag');
+    console.error(err.message);
+  }
+};

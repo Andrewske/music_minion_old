@@ -21,7 +21,6 @@ export default function (state = initialState, action) {
   const { type, payload } = action;
   switch (type) {
     case IMPORT_START:
-      console.log('starting the import?');
       return {
         ...state,
         playlists: {},
