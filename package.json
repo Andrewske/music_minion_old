@@ -42,6 +42,7 @@
     "uuidv4": "^6.1.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^5.4.0",
     "concurrently": "^5.2.0",
     "nodemon": "^2.0.4"
   }
