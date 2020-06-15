@@ -3,6 +3,9 @@ const Router = require('express-promise-router');
 const router = new Router();
 const spotify = require('../../components/spotify');
 const tags = require('../../components/tags');
+const { mbApi } = require('../../config/musicBrainz');
+//const { lastfm } = require('../../config/lastfm');
+const lastFm = require('../../components/lastFm');
 
 // Model Imports
 const { getUser } = require('../../models/users');
@@ -226,6 +229,35 @@ router.get('/import/artist/:artist_id', async (req, res) => {
     );
 
     res.status(200).json({ tagData, artist });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err);
+  }
+});
+
+router.get('/musicbrainz/:isrc', async (req, res) => {
+  const isrc = req.params.isrc;
+  try {
+    const track = await mbApi.getEntity('isrc', isrc);
+    const mbid = track.recordings[0].id;
+    const method = 'getTopTags';
+    const name = 'Stay - Wooli Remix';
+    const artist = 'Delta Heavy';
+    const trackTags = await lastFm.getArtistInfo(method, artist);
+
+    // const trackTags = await lastfm.trackTopTags(
+    //   { name: name, artistName: artist },
+    //   (err, data) => {
+    //     if (err) {
+    //       console.error(err);
+    //       return err;
+    //     } else {
+    //       console.log(data);
+    //       return data;
+    //     }
+    //   }
+    // );
+    res.status(200).json(trackTags);
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

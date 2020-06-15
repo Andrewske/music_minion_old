@@ -57,6 +57,7 @@ CREATE TABLE tag (
     tag_id BIGSERIAL NOT NULL PRIMARY KEY,
     name text NOT NULL,
     type text NOT NULL,
+    source text NOT NULL,
     UNIQUE (name, type)
 );
 
