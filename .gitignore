@@ -106,3 +106,7 @@ dist
 #Config passwords
 config/default.json
 config/keys.js
+config/production.json
+
+#Client
+client/node_modules
