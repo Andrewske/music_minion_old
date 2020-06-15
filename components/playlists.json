@@ -1,0 +1,38 @@
+[
+    [
+        {
+            "collaborative": false,
+            "description": "",
+            "external_urls": {
+                "spotify": "https://open.spotify.com/playlist/7tE2gwGYYueKmPmnYzUcdc"
+            },
+            "href": "https://api.spotify.com/v1/playlists/7tE2gwGYYueKmPmnYzUcdc",
+            "id": "7tE2gwGYYueKmPmnYzUcdc",
+            "images": [
+                {
+                    "height": null,
+                    "url": "https://i.scdn.co/image/ab67706c0000da8418a8c5270ba087f6011fe74d",
+                    "width": null
+                }
+            ],
+            "name": "Excision Detox",
+            "owner": {
+                "display_name": "Excision",
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/user/officialexcision"
+                },
+                "href": "https://api.spotify.com/v1/users/officialexcision",
+                "id": "officialexcision",
+                "type": "user",
+                "uri": "spotify:user:officialexcision"
+            },
+            "primary_color": null,
+            "public": false,
+            "snapshot_id": "NDQsODk3YzFjNzEyZWY3NGQ4Y2E1MWI2MzBkYWQwOGZiZDQ1Y2MzZDIwYQ==",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/7tE2gwGYYueKmPmnYzUcdc/tracks",
+                "total": 37
+            },
+            "type": "playlist",
+            "uri": "spotify:playlist:7tE2gwGYYueKmPmnYzUcdc"
+        }

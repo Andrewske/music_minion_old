@@ -1,0 +1,49 @@
+{
+  "name": "music_minion",
+  "version": "1.0.0",
+  "description": "Music discovery and Playlist Organizer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server",
+    "server": "nodemon server",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Andrewske/music_minion.git"
+  },
+  "author": "Kevin Andrews",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Andrewske/music_minion/issues"
+  },
+  "homepage": "https://github.com/Andrewske/music_minion#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-promise-router": "^3.0.3",
+    "express-validator": "^6.5.0",
+    "jsonwebtoken": "^8.5.1",
+    "passport": "^0.4.1",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "passport-spotify": "^1.1.0",
+    "pg": "^8.2.1",
+    "request": "^2.88.2",
+    "uuid": "^8.1.0",
+    "uuidv4": "^6.1.0"
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^5.4.0",
+    "concurrently": "^5.2.0",
+    "nodemon": "^2.0.4"
+  }
+}
