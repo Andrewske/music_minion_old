@@ -44,6 +44,7 @@ exports.removeTrackTag = async (track_id, user_id, tag_id) => {
             `,
       [track_id, user_id, tag_id]
     );
+    console.log(trackTag);
     return trackTag.rows[0];
   } catch (err) {
     console.log('Error deleting track Tag');

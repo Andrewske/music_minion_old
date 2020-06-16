@@ -244,19 +244,6 @@ router.get('/musicbrainz/:isrc', async (req, res) => {
     const name = 'Stay - Wooli Remix';
     const artist = 'Delta Heavy';
     const trackTags = await lastFm.getArtistInfo(method, artist);
-
-    // const trackTags = await lastfm.trackTopTags(
-    //   { name: name, artistName: artist },
-    //   (err, data) => {
-    //     if (err) {
-    //       console.error(err);
-    //       return err;
-    //     } else {
-    //       console.log(data);
-    //       return data;
-    //     }
-    //   }
-    // );
     res.status(200).json(trackTags);
   } catch (err) {
     console.error(err);

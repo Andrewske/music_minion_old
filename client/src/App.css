@@ -771,3 +771,23 @@ button {
 .playlist {
   background-color: #0000ff;
 }
+
+.popup-content {
+  width: 100%;
+  padding: 10px 5px;
+  margin: auto;
+  text-align: center;
+  color: black;
+  background: transparent !important;
+  border: none !important;
+}
+.popup > .selections {
+  display: flex;
+  flex-direction: column;
+  background: transparent !important;
+}
+
+.popup-button {
+  width: 100%;
+  border-radius: 25px;
+}

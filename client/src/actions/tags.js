@@ -37,8 +37,19 @@ export const removeTrackTag = ({ tag, track_id, user_id }) => async (
 
     //const data = { type, name, track_id, user_id };
     let res = await axios.delete('api/tag/track', config);
+    console.log(res);
   } catch (err) {
     console.log('Error deleting track tag');
     console.error(err);
   }
 };
+
+// export const getTagSuggestions = tracks => async (dispatch) => {
+//   console.log("Getting Tag Suggestions")
+//   try {
+//     const tracks = axios.get()
+//   } catch (err) {
+//     console.error(`Error getting tag suggestions: ${err.message}`)
+
+//   }
+// }

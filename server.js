@@ -60,6 +60,7 @@ app.use('/api/tag', require('./routes/api/tag'));
 app.use('/api/playlist', require('./routes/api/playlist'));
 app.use('/api/track', require('./routes/api/track'));
 app.use('/api/artist', require('./routes/api/artist'));
+app.use('/api/lastfm', require('./routes/api/lastfm'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {

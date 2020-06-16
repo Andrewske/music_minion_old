@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 import AudioFeatures from './AudioFeatures';
 import Tags from './Tags';
+import TagSuggestions from './TagSuggestions';
 
 const TrackItem = ({
   track: { track_id, name, artists, audio_features, tags },
@@ -34,6 +35,7 @@ const TrackItem = ({
         <Tags track_id={track_id} track_tags={tags} />
       </div>
       {showTrack && <AudioFeatures features={audio_features[0]} />}
+      {showTrack && <TagSuggestions track_id={track_id} />}
     </Fragment>
   );
 };

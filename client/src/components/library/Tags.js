@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { addTrackTag, removeTrackTag } from '../../actions/tags';
-import styled from 'styled-components';
+import Popup from 'reactjs-popup';
+import TagSuggestions from './TagSuggestions';
 
 const _ = require('lodash');
 
@@ -25,6 +26,7 @@ export const Tags = ({
         return setTagData({ ...tagData, addTag: true });
       case 'removeTag':
         let tag = tags.filter((tag) => tag.tag_id === e.target.id)[0];
+        console.log(`removing ${tag}`);
         removeTrackTag({ tag, track_id, user_id });
         return setTagData({
           ...tagData,
@@ -51,6 +53,11 @@ export const Tags = ({
       tag = { type: 'misc', name: _(tag).snakeCase() };
     }
 
+    addTrackTag(tag, track_id, user_id);
+    setTagData({ tag: '', tags: [...tags, tag] });
+  };
+
+  const addSuggestion = (tag) => {
     addTrackTag(tag, track_id, user_id);
     setTagData({ tag: '', tags: [...tags, tag] });
   };
@@ -99,6 +106,26 @@ export const Tags = ({
           />
         </form>
       )}
+      <Popup
+        trigger={
+          <i
+            className='icon material-icons'
+            title='tagSuggestions'
+            style={{ cursor: 'pointer' }}
+            //onClick={(e) => onClick(e)}
+          >
+            add
+          </i>
+        }
+        position='top center'
+        closeOnDocumentClick
+      >
+        <TagSuggestions
+          action={addSuggestion}
+          track_id={track_id}
+          track_tags={tagData.tags}
+        />
+      </Popup>
     </div>
   );
 };

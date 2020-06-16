@@ -46,6 +46,7 @@ export default function (state = initialState, action) {
         ...state,
         error: { ...state.error, payload },
         loading: false,
+        tracks: [],
       };
     default:
       return state;

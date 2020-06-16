@@ -54,8 +54,11 @@ exports.createPlaylistTag = async ({ playlist_id, user_id, name, type }) => {
 
 exports.deleteTrackTag = async ({ user_id, track_id, name, type }) => {
   try {
+    console.log({ user_id, track_id, name, type });
     const tag = await getTag(name, type);
+    console.log(tag);
     const track_tag = await removeTrackTag(track_id, user_id, tag.tag_id);
+    console.log(track_tag);
     return 'Tag Deleted';
   } catch (err) {
     console.log('Error removing track tag');
