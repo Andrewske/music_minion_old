@@ -9,9 +9,10 @@ const TagSuggestions = ({ user_id, track_id, tracks, track_tags, action }) => {
   const track =
     tracks.filter((track) => track.track_id === track_id)[0] || false;
   track_tags = track_tags.map((tag) => tag.name) || [];
-  const tags = track.tag_sugg.filter(
-    (tag) => !track_tags.includes(_.snakeCase(tag.name))
-  );
+  const tag_sugg = track.tag_sugg.lastFm || null;
+  const tags = tag_sugg
+    ? tag_sugg.filter((tag) => !track_tags.includes(_.snakeCase(tag.name)))
+    : [];
   const [tagData, setTagData] = useState({
     start: 0,
     end: tags.length > 5 ? 5 : tags.length || null,
@@ -39,7 +40,6 @@ const TagSuggestions = ({ user_id, track_id, tracks, track_tags, action }) => {
   return (
     tags && (
       <div className='tag-box'>
-        <p>Tag Suggestions</p>
         {tagData.start > 0 && (
           <i
             className='icon material-icons'

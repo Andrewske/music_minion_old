@@ -5,6 +5,11 @@
   --light-color: #f4f4f4;
   --danger-color: #dc3545;
   --success-color: #28a745;
+  --speed: 500ms;
+  --tag-size: 50px;
+  --bg: #1a1a1a;
+  --border: 1px solid #474a4d;
+  --border-radius: 8px;
 }
 
 * {
@@ -22,12 +27,14 @@ body {
 }
 
 a {
-  color: var(--primary-color);
+  color: var(--text-color);
   text-decoration: none;
 }
 
 ul {
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 img {
@@ -308,7 +315,8 @@ button {
   width: 100%;
   top: 0;
   border-bottom: solid 1px var(--primary-color);
-  opacity: 0.9;
+  opacity: 1;
+  background: #1a1a1a;
 }
 
 .navbar ul {
@@ -345,145 +353,6 @@ button {
   align-items: center;
   justify-content: center;
   text-align: center;
-}
-
-/* Profiles Page */
-.profile {
-  display: grid;
-  grid-template-columns: 2fr 4fr 2fr;
-  align-items: center;
-  grid-gap: 2rem;
-  padding: 1rem;
-  line-height: 1.8;
-  margin-bottom: 1rem;
-}
-
-/* Profile Page */
-.profile-grid {
-  display: grid;
-  grid-template-areas:
-    'top top'
-    'about about'
-    'exp edu'
-    'github github';
-  grid-gap: 1rem;
-}
-
-.profile-top {
-  grid-area: top;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.profile-top img {
-  width: 250px;
-}
-
-.profile-top .icons a {
-  color: #fff;
-  margin: 0 0.3rem;
-}
-
-.profile-top .icons a:hover {
-  color: var(--dark-color);
-}
-
-.profile-about {
-  grid-area: about;
-  text-align: center;
-}
-
-.profile-about .skills {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.profile-exp {
-  grid-area: exp;
-}
-
-.profile-edu {
-  grid-area: edu;
-}
-
-.profile-exp h2,
-.profile-edu h2 {
-  margin-bottom: 1rem;
-}
-
-.profile-exp > div,
-.profile-edu > div {
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: #ccc 1px dotted;
-}
-
-.profile-exp > div:last-child,
-.profile-edu > div:last-child {
-  border: 0;
-}
-
-.profile-exp p,
-.profile-edu p {
-  margin: 0.5rem 0;
-}
-
-.profile-github {
-  grid-area: github;
-}
-
-.profile-github .repo {
-  display: flex;
-}
-
-.profile-github .repo > div:first-child {
-  flex: 7;
-  flex-basis: 70%;
-}
-
-.profile-github > div:last-child {
-  flex: 3;
-  flex-basis: 20%;
-}
-
-/* Posts Page */
-.post-form .post-form-header {
-  background: var(--primary-color);
-  padding: 0.5rem;
-}
-
-.post {
-  display: grid;
-  grid-template-columns: 1fr 4fr;
-  grid-gap: 2rem;
-  align-items: center;
-}
-
-.post > div:first-child {
-  text-align: center;
-}
-
-.post img {
-  width: 100px;
-}
-
-.post .comment-count {
-  background: var(--light-color);
-  color: var(--primary-color);
-  padding: 0.1rem 0.2rem;
-  border-radius: 5px;
-  font-size: 0.8rem;
-}
-
-.post .post-date {
-  color: #aaa;
-  font-size: 0.8rem;
-  margin-bottom: 0.5rem;
 }
 
 /* Mobile Styles */
@@ -718,12 +587,134 @@ button {
   fill: black;
 }
 
+/* Tag Styling */
+
 .tag-box {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: middle;
-  margin-left: 5px;
+  height: var(--tag-size);
+  background: var(--bg);
 }
+
+.tag-box-tags {
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.tag-item {
+  /* width: calc(var(--tag-size) * 0.8); */
+  padding: 5px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.tag-button {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  background-color: #17a2b8;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  padding: 0.15rem;
+}
+
+/* Icon Button */
+.icon-button {
+  --button-size: calc(var(--nav-size) * 0.5);
+  width: var(--button-size);
+  height: var(--button-size);
+  background-color: --bg;
+  border-radius: 50%;
+  padding: 5px;
+  margin: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 300ms;
+}
+
+.icon-button:hover {
+  filter: brightness(1.2);
+}
+
+.svg {
+  fill: var(--text-color);
+  width: 20px;
+  height: 20px;
+}
+
+.dropdown {
+  background-color: var(--bg);
+  position: absolute;
+  top: 10px;
+  transform: translateX(-70%);
+  overflow: hidden;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  transition: height var(--speed) ease;
+}
+
+.menu {
+  width: 100%;
+}
+
+.menu-item {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  border-radius: var(--border-radius);
+  transition: background var(--speed);
+  padding: 1rem;
+}
+
+.menu-item:hover {
+  background-color: #525357;
+}
+
+.menu-primary-enter {
+  position: relative;
+  transform: translateX(-110%);
+}
+
+.menu-primary-enter-active {
+  transform: translateX(0%);
+  transition: all var(--speed) ease;
+}
+
+.menu-primary-exit {
+  position: relative;
+}
+
+.menu-primary-exit-active {
+  transform: translateX(-110%);
+  transition: all var(--speed) ease;
+}
+
+.menu-secondary-enter {
+  position: relative;
+  transform: translateX(-110%);
+}
+
+.menu-secondary-enter-active {
+  transform: translateX(0%);
+  transition: all var(--speed) ease;
+}
+
+.menu-secondary-exit {
+  position: relative;
+}
+
+.menu-secondary-exit-active {
+  transform: translateX(-110%);
+  transition: all var(--speed) ease;
+}
+
+/* OLD TAG */
 
 .tag-input {
   background-color: inherit;
@@ -733,7 +724,7 @@ button {
   margin: 2px;
 }
 
-.tag {
+/* .tag {
   display: flex;
   line-height: 25px;
   justify-content: center;
@@ -743,7 +734,7 @@ button {
   border: 1px solid #1a1a1a;
   border-radius: 15px;
   background-color: #ff0000;
-}
+} */
 
 .tag-text {
   margin-bottom: 0px !important;
@@ -754,6 +745,8 @@ button {
   margin: 0px auto;
   font-size: 16px;
   padding-left: 5px;
+  max-height: 15px;
+  max-width: 15px;
 }
 
 .cancel {

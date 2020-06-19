@@ -43,6 +43,7 @@ CREATE TABLE track (
     track_id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     popularity INTEGER,
+    tag_sugg JSONB,
 );
 
 CREATE TABLE artist (

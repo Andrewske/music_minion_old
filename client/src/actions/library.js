@@ -29,11 +29,11 @@ export const getPlaylists = () => async (dispatch) => {
 export const getTracks = (playlist) => async (dispatch) => {
   try {
     let res = await axios.get(`/api/playlist/${playlist.playlist_id}`);
-    console.log(res.data);
-    const tracks = await axios.post('/api/lastFm/toptracktags', {
-      data: { tracks: res.data.tracks },
-    });
-    res.data.tracks = tracks.data;
+    //console.log(res.data);
+    // const tracks = await axios.post('/api/lastFm/toptracktags', {
+    //   data: { tracks: res.data.tracks },
+    // });
+    res.data.tracks = res.data.tracks;
     //console.log(res.data);
     dispatch({
       type: LOAD_TRACKS,

@@ -131,7 +131,7 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
         if (track_id) {
           track_info = [
             ...track_info,
-            { user_id, track_id, playlist_id, name, popularity },
+            { user_id, track_id, playlist_id, name, popularity, artists },
           ];
           artist_info = [...artist_info, ...artists];
         }
@@ -142,7 +142,7 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
 
     // Add tracks to the database
     const newTracks = await addTracks(track_info);
-    console.log('new tracks');
+
     // Add the user track record
     const userTracks = await addUserTracks(track_info);
 
@@ -167,6 +167,9 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
     const audio_features = await addAudioFeatures(
       audioFeatures['audio_features']
     );
+
+    // Add recommended lastFm tags to db
+    const tag_sugg = await lastFm.importTags(track_info);
 
     res.status(200).json({
       total_tracks: tracks.length,
@@ -229,22 +232,6 @@ router.get('/import/artist/:artist_id', async (req, res) => {
     );
 
     res.status(200).json({ tagData, artist });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send(err);
-  }
-});
-
-router.get('/musicbrainz/:isrc', async (req, res) => {
-  const isrc = req.params.isrc;
-  try {
-    const track = await mbApi.getEntity('isrc', isrc);
-    const mbid = track.recordings[0].id;
-    const method = 'getTopTags';
-    const name = 'Stay - Wooli Remix';
-    const artist = 'Delta Heavy';
-    const trackTags = await lastFm.getArtistInfo(method, artist);
-    res.status(200).json(trackTags);
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

@@ -35,7 +35,7 @@ const TrackItem = ({
         <Tags track_id={track_id} track_tags={tags} />
       </div>
       {showTrack && <AudioFeatures features={audio_features[0]} />}
-      {showTrack && <TagSuggestions track_id={track_id} />}
+      {/* {showTrack && <TagSuggestions track_id={track_id} />} */}
     </Fragment>
   );
 };
