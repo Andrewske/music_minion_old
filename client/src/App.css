@@ -261,7 +261,11 @@ img {
   width: 100%;
   padding: 0.4rem;
   font-size: 1.2rem;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
+}
+
+*:focus {
+  outline: none;
 }
 
 .form input[type='submit'],
@@ -626,14 +630,16 @@ button {
   --button-size: calc(var(--nav-size) * 0.5);
   width: var(--button-size);
   height: var(--button-size);
-  background-color: --bg;
+  background-color: none;
   border-radius: 50%;
-  padding: 5px;
+  padding: 4px;
   margin: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: filter 300ms;
+  z-index: 1;
+  cursor: pointer;
 }
 
 .icon-button:hover {
@@ -650,7 +656,7 @@ button {
   background-color: var(--bg);
   position: absolute;
   top: 10px;
-  transform: translateX(-70%);
+  transform: translateX(-10%);
   overflow: hidden;
   padding-left: 1rem;
   padding-right: 1rem;
@@ -660,16 +666,34 @@ button {
 }
 
 .menu {
+  min-width: 200px;
   width: 100%;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: center;
+  width: 100;
+  margin: auto;
+  padding: 2px;
+}
+.menu-title {
+  margin-bottom: 0px;
+  font-size: 13px;
 }
 
 .menu-item {
   height: 50px;
   display: flex;
   align-items: center;
+  color: white;
+  z-index: 1;
   border-radius: var(--border-radius);
+  background: var(--bg);
+  border: none;
   transition: background var(--speed);
   padding: 1rem;
+  margin: 3px;
 }
 
 .menu-item:hover {

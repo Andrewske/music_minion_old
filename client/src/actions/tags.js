@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-export const addTrackTag = (tag, track_id, user_id) => async (dispatch) => {
+export const addTrackTag = async (tag, track_id, user_id) => {
+  console.log('Adding Track Tag');
   try {
     const config = {
       headers: {
@@ -9,7 +10,7 @@ export const addTrackTag = (tag, track_id, user_id) => async (dispatch) => {
     };
     const { type, name } = tag;
     const body = JSON.stringify({ type, name, track_id, user_id });
-    let res = await axios.post('api/tag/track', body, config);
+    await axios.post('api/tag/track', body, config);
   } catch (err) {
     console.log('Error adding track tag');
     console.error(err);

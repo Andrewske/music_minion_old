@@ -1,5 +1,5 @@
 import React from 'react';
-import SpotifyLoginButton from '../auth/SpotifyLoginButton';
+//import SpotifyLoginButton from '../auth/SpotifyLoginButton';
 
 const Landing = () => {
   return (

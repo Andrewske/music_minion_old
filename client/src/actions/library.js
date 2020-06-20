@@ -1,5 +1,4 @@
 import axios from 'axios';
-//import { setAlert } from './alert';
 
 import {
   LOAD_PLAYLISTS,
@@ -33,7 +32,7 @@ export const getTracks = (playlist) => async (dispatch) => {
     // const tracks = await axios.post('/api/lastFm/toptracktags', {
     //   data: { tracks: res.data.tracks },
     // });
-    res.data.tracks = res.data.tracks;
+    //res.data.tracks = res.data.tracks;
     //console.log(res.data);
     dispatch({
       type: LOAD_TRACKS,

@@ -1,41 +1,39 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import Img from 'react-image';
-//import Tooltip from '../layout/Tooltip';
+//import Img from 'react-image';
 import ReactTooltip from 'react-tooltip';
 
 import convertAudioFeatures from '../../utils/convertAudioFeatures';
+const FeatureBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  width: 300px;
+  margin: auto;
+`;
+const FeatureGraph = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: middle;
+  width: 300px;
+  margin: auto;
+`;
+
+const Feature = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: ${({ color }) => color};
+  width: 25px;
+  margin: auto 1px;
+  height: ${({ height }) => height};
+  position: relative;
+`;
 
 const AudioFeatures = ({ features }) => {
   const caf = convertAudioFeatures(features);
-
-  const FeatureBox = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    width: 300px;
-    margin: auto;
-  `;
-  const FeatureGraph = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: middle;
-    width: 300px;
-    margin: auto;
-  `;
-
-  const Feature = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: ${({ color }) => color};
-    width: 25px;
-    margin: auto 1px;
-    height: ${({ height }) => height};
-    position: relative;
-  `;
 
   return (
     caf && (

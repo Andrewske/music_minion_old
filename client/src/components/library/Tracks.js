@@ -6,7 +6,6 @@ import { clearTracks } from '../../actions/library';
 import Loader from '../layout/Loader';
 import TrackItem from './TrackItem';
 import AudioFeatures from './AudioFeatures';
-import { CLEAR_TRACKS } from '../../actions/types';
 
 const Tracks = ({
   clearTracks,
