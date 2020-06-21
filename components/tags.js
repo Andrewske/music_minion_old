@@ -5,6 +5,7 @@ const {
   addTrackTag,
   removeTrackTag,
 } = require('../models/track_tag');
+const { getUserTag, addUserTag } = require('../models/user_tag');
 const { getPlaylistTag, addPlaylistTag } = require('../models/playlist_tag');
 
 exports.createArtistTag = async ({ artist_id, user_id, name, type }) => {
@@ -33,6 +34,21 @@ exports.createTrackTag = async ({ user_id, track_id, name, type }) => {
     return { tag, track_tag };
   } catch (err) {
     console.log('Error creating track tag');
+    console.error(err);
+  }
+};
+
+exports.createUserTag = async ({ user_id, name, type }) => {
+  try {
+    const tag = (await getTag(name, type)) || (await addTag(name, type));
+
+    const user_tag =
+      (await getUserTag(user_id, tag.tag_id)) ||
+      (await addUserTag(user_id, tag.tag_id));
+
+    return { tag, user_tag };
+  } catch (err) {
+    console.log('Error creating user tag');
     console.error(err);
   }
 };

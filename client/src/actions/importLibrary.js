@@ -36,13 +36,13 @@ export const importPlaylists = ({ limit, owner }) => async (dispatch) => {
   }
 };
 
-export const importTracks = (playlist_data) => async (dispatch) => {
+export const importTracks = (playlist_data, useLastFm) => async (dispatch) => {
   try {
     await Promise.all(
       playlist_data.map(async ({ playlist_id }) => {
         try {
           const res = await axios.get(
-            `/api/spotify/import/playlist/track/${playlist_id}`
+            `/api/spotify/import/playlist/track/${playlist_id}?useLastFm=${useLastFm}`
           );
           dispatch({
             type: IMPORT_TRACKS,

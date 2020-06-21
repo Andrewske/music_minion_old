@@ -2,47 +2,42 @@ import React, { Fragment, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { getPlaylists } from '../../actions/playlist';
+import { getArtists } from '../../actions/artist';
 import { loadUser } from '../../actions/auth';
 import PlaylistItem from './PlaylistItem';
 import ListItem from './ListItem';
 import Loader from '../layout/Loader';
 import store from '../../store';
 
-const Playlists = ({ getPlaylists, playlist: { playlists, loading } }) => {
+const Artists = ({ getArtists, library: { artists, loading } }) => {
   useEffect(() => {
     async function load() {
       await store.dispatch(loadUser());
-      await getPlaylists();
+      await getArtists();
     }
     load();
-  }, [getPlaylists]);
+  }, [getArtists]);
 
   return loading ? (
     <Loader />
   ) : (
     <Fragment>
       <div className='item-list'>
-        {playlists.map((playlist) => (
-          // <PlaylistItem key={playlist.playlist_id} playlist={playlist} />
-          <ListItem
-            key={playlist.playlist_id}
-            type='playlist'
-            current={playlist}
-          />
+        {artists.map((artist) => (
+          <ListItem key={artist.artist_id} type='artist' current={artist} />
         ))}
       </div>
     </Fragment>
   );
 };
 
-Playlists.propTypes = {
-  getPlaylists: PropTypes.func.isRequired,
-  playlist: PropTypes.object,
+Artists.propTypes = {
+  getArtists: PropTypes.func.isRequired,
+  artist: PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
-  playlist: state.playlist,
+  library: state.library,
 });
 
-export default connect(mapStateToProps, { getPlaylists })(Playlists);
+export default connect(mapStateToProps, { getArtists })(Artists);

@@ -20,3 +20,5 @@ export const LOAD_PLAYLISTS = 'LOAD_PLAYLISTS';
 export const LOAD_TRACKS = 'LOAD_TRACKS';
 export const CLEAR_TRACKS = 'CLEAR_TRACKS';
 export const PLAYLIST_ERROR = 'PLAYLIST_ERROR';
+export const LOAD_ARTISTS = 'LOAD_ARTISTS';
+export const LOAD_GENRES = 'LOAD_GENRES';

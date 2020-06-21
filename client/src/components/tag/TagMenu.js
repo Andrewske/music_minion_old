@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
-import { CSSTransition } from 'react-transition-group';
 import { DropdownItem } from '../dropdown/DropdownItem';
+import DropdownPage from '../dropdown/DropdownPage';
 import TagSuggestions from './TagSuggestions';
 import AddTagInput from './AddTagInput';
 import TagTypes from './TagTypes';
@@ -23,37 +23,30 @@ const TagMenu = ({
   });
   return (
     <Fragment>
-      <CSSTransition
-        in={activeMenu === 'main'}
-        timeout={500}
-        classNames='menu-primary'
-        unmountOnExit
-        onEnter={calcHeight}
+      <DropdownPage
+        menuName='main'
+        title='Add a tag:'
+        activeMenu={activeMenu}
+        calcHeight={calcHeight}
       >
-        <div className='menu'>
-          <div className='menu-header'>
-            <p className='menu-title'>Add a tag:</p>
-          </div>
-
-          <DropdownItem
-            input={
-              <AddTagInput
-                tagData={tagData}
-                setTagData={setTagData}
-                setAddTag={setAddTag}
-                goToMenu='tagTypes'
-                setActiveMenu={setActiveMenu}
-              />
-            }
-          />
-          <DropdownItem
-            name='Suggestions'
-            goToMenu='0'
-            icon='right'
-            setActiveMenu={setActiveMenu}
-          ></DropdownItem>
-        </div>
-      </CSSTransition>
+        <DropdownItem
+          input={
+            <AddTagInput
+              tagData={tagData}
+              setTagData={setTagData}
+              setAddTag={setAddTag}
+              goToMenu='tagTypes'
+              setActiveMenu={setActiveMenu}
+            />
+          }
+        />
+        <DropdownItem
+          name='Suggestions'
+          goToMenu='0'
+          icon='right'
+          setActiveMenu={setActiveMenu}
+        ></DropdownItem>
+      </DropdownPage>
 
       <TagSuggestions
         activeMenu={activeMenu}

@@ -15,6 +15,7 @@ const initialState = {
   error: {},
   limit: null,
   owner: null,
+  useLastFm: false,
 };
 
 export default function (state = initialState, action) {
@@ -27,6 +28,7 @@ export default function (state = initialState, action) {
         tracks: [],
         limit: payload.limit,
         owner: payload.owner,
+        useLastFm: payload.useLastFm,
         import_playlists: true,
         importing: true,
         error: {},

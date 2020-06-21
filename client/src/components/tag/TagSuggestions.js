@@ -1,8 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { addTrackTag } from '../../actions/tags';
-import { CSSTransition } from 'react-transition-group';
 import { DropdownItem } from '../dropdown/DropdownItem';
+import DropdownPage from '../dropdown/DropdownPage';
 
 const _ = require('lodash');
 
@@ -15,19 +15,29 @@ const TagSuggestions = ({
   track_tags,
   setAddTag,
 }) => {
+  //Get the current track from State and get tag names
   const track =
     tracks.filter((track) => track.track_id === track_id)[0] || false;
   track_tags = track_tags.map((tag) => tag.name) || [];
-  const tag_sugg = (track.tag_sugg && track.tag_sugg.lastFm) || [
-    { name: 'No tag suggestions' },
-  ];
+
+  //Get the tag suggestions
+  const tag_sugg =
+    track.tagg_sugg && track.tag_sugg.lastFm.length > 0
+      ? track.tag_sugg.lastFm
+      : null;
+
+  // Filter out suggestions that are already tags
   const tags = tag_sugg
     ? tag_sugg.filter((tag) => !track_tags.includes(_.snakeCase(tag.name)))
-    : [];
+    : null;
+
+  // Set the tag state for this menu
   const [tagData, setTagData] = useState({
     start: 0,
-    end: tags.length > 5 ? 5 : tags.length || null,
-    tagGroups: [],
+    end: tags ? (tags.length > 5 ? 5 : tags.length) : null,
+    total: tags ? tags.length : null,
+    noTags: tags ? false : true,
+    tagGroups: tags ? [] : null,
   });
 
   useEffect(() => {
@@ -42,45 +52,52 @@ const TagSuggestions = ({
   };
   return (
     <Fragment>
-      {tagData.tagGroups.map((tags, index) => (
-        <CSSTransition
-          in={activeMenu === _.toString(index)}
-          unmountOnExit
-          timeout={500}
-          classNames='menu-secondary'
-          onEnter={calcHeight}
-        >
-          <div className='menu'>
-            <DropdownItem
-              goToMenu={activeMenu > 0 ? _.toString(index - 1) : 'main'}
+      {tagData.noTags && (
+        <DropdownPage
+          title='Sorry... No Suggestions'
+          menuName='0'
+          setActiveMenu={setActiveMenu}
+          activeMenu={activeMenu}
+          calcHeight={calcHeight}
+          showPrev='main'
+        ></DropdownPage>
+      )}
+      {!tagData.noTags &&
+        tagData.tagGroups.map((tags, index) => {
+          let total = tagData.total;
+          let pages = tagData.tagGroups.length;
+          let viewing = tags.length * (index + 1);
+          let next =
+            _.toInteger(activeMenu) < tagData.tagGroups.length - 1
+              ? _.toString(index + 1)
+              : '0';
+          return (
+            <DropdownPage
+              title={`Viewing ${
+                index === pages - 1 ? total : viewing
+              } of ${total}
+            suggestions`}
+              menuName={_.toString(index)}
+              activeMenu={activeMenu}
+              calcHeight={calcHeight}
+              classNames='menu-secondary'
               setActiveMenu={setActiveMenu}
-              name='Back'
-              icon='left'
-            />
-            {tags.map((tag) => (
-              <span id={tag.name} onClick={(e) => onClick(e)}>
-                <DropdownItem
-                  goToMenu={'tagTypes'}
-                  setActiveMenu={setActiveMenu}
-                  name={_.snakeCase(tag.name)}
-                  id={_.snakeCase(tag.name)}
-                />
-              </span>
-            ))}
-
-            <DropdownItem
-              goToMenu={
-                _.toInteger(activeMenu) < tagData.tagGroups.length - 1
-                  ? _.toString(index + 1)
-                  : '0'
-              }
-              setActiveMenu={setActiveMenu}
-              name='More'
-              icon='right'
-            />
-          </div>
-        </CSSTransition>
-      ))}
+              showPrev={activeMenu > 0 ? _.toString(index - 1) : 'main'}
+              showNext={next}
+            >
+              {tags.map((tag) => (
+                <span key={tag.name} id={tag.name} onClick={(e) => onClick(e)}>
+                  <DropdownItem
+                    goToMenu={'tagTypes'}
+                    setActiveMenu={setActiveMenu}
+                    name={_.snakeCase(tag.name)}
+                    id={_.snakeCase(tag.name)}
+                  />
+                </span>
+              ))}
+            </DropdownPage>
+          );
+        })}
     </Fragment>
   );
 };

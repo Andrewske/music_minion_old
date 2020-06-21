@@ -50,9 +50,7 @@ const TagItem = ({
       {props.name && (
         <Fragment>
           <button className={`tag-button ${props.color}`}>
-            <span id='dropdown' onClick={(e) => onClick(e)}>
-              #{props.name}
-            </span>
+            <span>#{props.name}</span>
             <CancelIcon
               className='svg icon-button'
               onClick={(e) => onClick(e)}

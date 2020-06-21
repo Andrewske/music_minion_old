@@ -169,7 +169,12 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
     );
 
     // Add recommended lastFm tags to db
-    const tag_sugg = await lastFm.importTags(track_info);
+    const useLastFm = req.query.useLastFm;
+    const tag_sugg = await lastFm.importTags({
+      tracks: track_info,
+      user_id,
+      useLastFm,
+    });
 
     res.status(200).json({
       total_tracks: tracks.length,

@@ -8,7 +8,7 @@ const TrackItem = ({
   track: { track_id, name, artists, audio_features, tags },
 }) => {
   const [showTrack, setShowTrack] = useState(false);
-  const af = audio_features[0] || [];
+  const af = (audio_features && audio_features[0]) || [];
   const onClick = (e) => {
     setShowTrack(!showTrack);
   };
@@ -25,13 +25,13 @@ const TrackItem = ({
             {name} by{' '}
             {artists &&
               artists.map(({ artist_id, name }) => (
-                <span key={artist_id}>{name}</span>
+                <span key={artist_id}>{name} </span>
               ))}
           </p>
         </span>
         <Tags track_id={track_id} track_tags={tags} />
       </div>
-      {showTrack && <AudioFeatures features={af} />}
+      {showTrack && audio_features && <AudioFeatures features={af} />}
     </Fragment>
   );
 };

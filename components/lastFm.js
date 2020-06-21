@@ -1,10 +1,10 @@
 const axios = require('axios');
 const { lastfm } = require('../config/keys');
 const { query } = require('../config/db');
+const { createTrackTag, createUserTag } = require('./tags');
 
-exports.importTags = async (tracks) => {
+exports.importTags = async ({ tracks, useLastFm, user_id }) => {
   try {
-    console.log(tracks);
     const promises = tracks.map(async (track) => {
       const name = track.name || null;
       const artist =
@@ -28,6 +28,24 @@ exports.importTags = async (tracks) => {
           tag_sugg,
           track.track_id,
         ]);
+        if (
+          useLastFm &&
+          tag_sugg &&
+          tag_sugg.lastFm.length > 0 &&
+          !tag_sugg.lastFm.error
+        ) {
+          console.log('Adding tag from Last Fm');
+          let params = {
+            user_id,
+            track_id: track.track_id,
+            name: tag_sugg.lastFm[0].name,
+            type: 'genre',
+          };
+          const newTag = await createTrackTag(params);
+          const userTag = await createUserTag(params);
+        } else {
+          console.log('Not adding tag from lastFm');
+        }
       }
       return track;
     });

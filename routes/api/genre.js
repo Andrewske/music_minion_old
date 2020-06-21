@@ -4,26 +4,40 @@ const { query } = require('../../config/db');
 const _ = require('lodash');
 
 const pagination = require('../../middleware/pagination');
+const { LinkType } = require('musicbrainz-api');
 
 // @route   GET api/artist/me
 // @desc    Get all of a users artist
 // @access  Public
-router.get('/me', pagination('user', 'artist'), async (req, res) => {
+router.get('/me', pagination('user', 'tag'), async (req, res) => {
+  console.log('here');
   try {
-    return res.status(200).json(res.paginatedResults);
+    let response = res.paginatedResults.filter((tag) => tag.type === 'genre');
+    console.log(response);
+    return res.status(200).json(response);
   } catch (err) {
     console.error(err);
     res.status(500).send(err);
   }
 });
 
-// @route   GET api/artist/:id
-// @desc    Get an artists tracks
+// @route   GET api/genre/:id
+// @desc    Get an genres tracks
 // @access  Public
-router.get('/:id', pagination('artist', 'track'), async (req, res) => {
-  console.log('here');
+router.get('/:id', async (req, res) => {
   try {
-    let tracks = res.paginatedResults;
+    const tag_id = req.params.id;
+    const user_id = req.user.user_id;
+    let tracks = await query(
+      `
+      SELECT * FROM track
+      INNER JOIN track_tag
+      ON track.track_id = track_tag.track_id
+      WHERE track_tag.tag_id = $1 AND track_tag.user_id = $2
+    `,
+      [tag_id, user_id]
+    );
+    tracks = tracks.rows;
     const track_ids = tracks.map((track) => track.track_id);
 
     artist_query = `
@@ -53,8 +67,7 @@ router.get('/:id', pagination('artist', 'track'), async (req, res) => {
       }),
       tags: _.filter(tags.rows, { track_id: track.track_id }),
     }));
-    //const playlist_features = await getPlaylistAudioFeatures(req.params.id);
-    console.log(tracks);
+
     return res.status(200).json({ tracks });
   } catch (err) {
     console.error(err);

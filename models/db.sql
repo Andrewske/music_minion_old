@@ -122,14 +122,14 @@ CREATE TABLE user_artist (
     UNIQUE (user_id, artist_id)
 );
 
-/* DON"T THINK I NEED THIS
+
 CREATE TABLE user_tag (
     user_tag_id BIGSERIAL NOT NULL,
     user_id UUID REFERENCES users(user_id),
     tag_id BIGSERIAL REFERENCES tag(tag_id),
     UNIQUE (user_id, tag_id)
 );
-*/
+
 
 CREATE TABLE playlist_tag (
     playlist_tag_id BIGSERIAL NOT NULL,

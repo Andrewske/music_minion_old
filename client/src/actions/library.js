@@ -25,18 +25,34 @@ export const getPlaylists = () => async (dispatch) => {
   }
 };
 
-export const getTracks = (playlist) => async (dispatch) => {
+export const getTracks = (type, current) => async (dispatch) => {
   try {
-    let res = await axios.get(`/api/playlist/${playlist.playlist_id}`);
-    //console.log(res.data);
-    // const tracks = await axios.post('/api/lastFm/toptracktags', {
-    //   data: { tracks: res.data.tracks },
-    // });
-    //res.data.tracks = res.data.tracks;
-    //console.log(res.data);
+    let artist,
+      playlist,
+      tag,
+      url = null;
+    switch (type) {
+      case 'artist':
+        url = `/api/artist/${current.artist_id}`;
+        artist = current;
+        break;
+      case 'playlist':
+        url = `/api/playlist/${current.playlist_id}`;
+        playlist = current;
+        break;
+      case 'genre':
+        url = `/api/genre/${current.tag_id}`;
+        tag = current;
+        break;
+      default:
+        url = '';
+    }
+    console.log(url);
+    let res = await axios.get(url);
+    const { tracks, audio_features } = res.data;
     dispatch({
       type: LOAD_TRACKS,
-      payload: { playlist, data: res.data },
+      payload: { artist, playlist, tag, tracks, audio_features },
     });
   } catch (err) {
     console.error(err.message);

@@ -10,7 +10,7 @@ const Loader = (props) => {
       <div id='loading-container'>
         {/*<!--Thanks to El Alemano https://codepen.io/elalemanyo/pen/wueft-->*/}
         <div id='bars'>{bars}</div>
-        <p id='loading-text' class='hidden'></p>
+        <p id='loading-text' className='hidden'></p>
       </div>
     </Fragment>
   );

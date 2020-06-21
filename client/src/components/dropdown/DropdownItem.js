@@ -15,7 +15,6 @@ export const DropdownItem = ({
       {input && input}
       {name && (
         <button
-          href='#'
           className='menu-item'
           id={id}
           onClick={() => goToMenu && setActiveMenu(goToMenu)}

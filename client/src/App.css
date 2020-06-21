@@ -384,7 +384,7 @@ button {
 
   /* Navbar */
   .hidden {
-    display: none;
+    display: none !important;
   }
   .navbar {
     display: block;
@@ -696,6 +696,22 @@ button {
   margin: 3px;
 }
 
+.menu-btn {
+  height: 50px;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 1;
+  border-radius: var(--border-radius);
+  background: var(--bg);
+  border: none;
+  transition: background var(--speed);
+  padding: 1rem;
+  margin: 3px;
+}
+
 .menu-item:hover {
   background-color: #525357;
 }
@@ -721,7 +737,7 @@ button {
 
 .menu-secondary-enter {
   position: relative;
-  transform: translateX(-110%);
+  transform: translateX(110%);
 }
 
 .menu-secondary-enter-active {
@@ -730,11 +746,11 @@ button {
 }
 
 .menu-secondary-exit {
-  position: relative;
+  /* position: relative; */
 }
 
 .menu-secondary-exit-active {
-  transform: translateX(-110%);
+  transform: translateX(110%);
   transition: all var(--speed) ease;
 }
 
@@ -783,10 +799,18 @@ button {
 }
 
 .genre {
-  background-color: green;
+  background-color: #1db954;
 }
 .playlist {
-  background-color: #0000ff;
+  background-color: #4285f4;
+}
+
+.artist {
+  background-color: #d51007;
+}
+
+.track {
+  background-color: #ff7700;
 }
 
 .popup-content {
@@ -807,4 +831,20 @@ button {
 .popup-button {
   width: 100%;
   border-radius: 25px;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border);
+  color: white;
+  border-radius: var(--border-radius);
+  padding: 0.25rem 1rem;
+  margin: 3px;
 }

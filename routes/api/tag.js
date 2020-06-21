@@ -16,6 +16,7 @@ const tags = require('../../components/tags');
 router.post('/track', async (req, res) => {
   try {
     const newTag = await tags.createTrackTag(req.body);
+    const userTag = await tags.createUserTag(req.body);
 
     res.status(200).json(newTag);
   } catch (err) {
@@ -53,6 +54,7 @@ module.exports = router;
 router.post('/playlist', async (req, res) => {
   try {
     const newTag = await tags.createPlaylistTag(req.body);
+    const userTag = await tags.createUserTag(req.body);
 
     res.status(200).json(newTag);
   } catch (err) {
@@ -70,6 +72,7 @@ module.exports = router;
 router.post('/artist', async (req, res) => {
   try {
     const newTag = await tags.createArtistTag(req.body);
+    const userTag = await tags.createUserTag(req.body);
 
     res.status(200).json(newTag);
   } catch (err) {

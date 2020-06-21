@@ -14,6 +14,7 @@ const ImportLibrary = ({
     tracks,
     limit,
     owner,
+    useLastFm,
   },
 }) => {
   useEffect(() => {
@@ -21,7 +22,7 @@ const ImportLibrary = ({
       importPlaylists({ limit, owner });
     }
     if (import_tracks) {
-      importTracks(playlist_data);
+      importTracks(playlist_data, useLastFm);
     }
   });
 
