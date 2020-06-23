@@ -62,7 +62,7 @@ const TagItem = ({
 
       {open && (
         <DropdownMenu
-          menu='tagMenu'
+          menu='TagMenu'
           track_id={track_id}
           tagData={tagData}
           setTagData={setTagData}

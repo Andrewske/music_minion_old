@@ -3,16 +3,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { getArtists } from '../../actions/artist';
-import { loadUser } from '../../actions/auth';
-import PlaylistItem from './PlaylistItem';
 import ListItem from './ListItem';
 import Loader from '../layout/Loader';
-import store from '../../store';
 
 const Artists = ({ getArtists, library: { artists, loading } }) => {
   useEffect(() => {
     async function load() {
-      await store.dispatch(loadUser());
       await getArtists();
     }
     load();

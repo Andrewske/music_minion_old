@@ -6,7 +6,7 @@
   --danger-color: #dc3545;
   --success-color: #28a745;
   --speed: 500ms;
-  --tag-size: 50px;
+  --tag-size: 30px;
   --bg: #1a1a1a;
   --border: 1px solid #474a4d;
   --border-radius: 8px;
@@ -45,7 +45,6 @@ img {
 .container {
   max-width: 1100px;
   margin: auto;
-  overflow: hidden;
   padding: 0 2rem;
   margin-top: 6rem;
   margin-bottom: 3rem;
@@ -296,16 +295,6 @@ button {
 }
 .form .social-input i.fa-linkedin {
   color: #0077b5;
-}
-
-.table th,
-.table td {
-  padding: 1rem;
-  text-align: left;
-}
-
-.table th {
-  background: var(--light-color);
 }
 
 /* Navbar */
@@ -580,7 +569,12 @@ button {
   margin: 5px;
 }
 
-.track-text {
+.track-primary {
+  margin: 0px auto !important;
+  padding-left: 5px;
+}
+.track-secondary {
+  font-size: 14px;
   margin: 0px auto !important;
   padding-left: 5px;
 }
@@ -622,7 +616,7 @@ button {
   background-color: #17a2b8;
   border: var(--border);
   border-radius: var(--border-radius);
-  padding: 0.15rem;
+  padding: 0rem 0.25rem 0rem 0.25rem;
 }
 
 /* Icon Button */
@@ -663,6 +657,13 @@ button {
   border: var(--border);
   border-radius: var(--border-radius);
   transition: height var(--speed) ease;
+}
+
+.sort-dropdown {
+  transform: translateX(-96%) translateY(25%) !important;
+}
+.filter-dropdown {
+  transform: translateX(-96%) translateY(25%) !important;
 }
 
 .menu {
@@ -813,6 +814,13 @@ button {
   background-color: #ff7700;
 }
 
+.bpm {
+  color: #d51007;
+}
+.duration {
+  color: #1db954;
+}
+
 .popup-content {
   width: 100%;
   padding: 10px 5px;
@@ -833,9 +841,18 @@ button {
   border-radius: 25px;
 }
 
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .filter-buttons {
   display: flex;
+  align-items: center;
   flex-wrap: nowrap;
+  margin: auto;
 }
 
 .filter-btn {
@@ -847,4 +864,29 @@ button {
   border-radius: var(--border-radius);
   padding: 0.25rem 1rem;
   margin: 3px;
+  height: 35px;
+}
+
+.filter-icon {
+  padding: 0.25rem 0.5rem;
+  height: 35px;
+  width: 35px;
+  margin: 3px;
+  border-radius: var(--border-radius);
+}
+
+/* Table Formatting */
+
+.playlist-table-row {
+  overflow: hidden;
+}
+
+.play-button {
+  padding: 0px !important;
+  padding-top: 5px !important;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
 }

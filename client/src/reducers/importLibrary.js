@@ -59,6 +59,7 @@ export default function (state = initialState, action) {
         error: { ...state.error, payload },
         import_playlists: false,
         import_tracks: false,
+        importing: false,
       };
     default:
       return state;

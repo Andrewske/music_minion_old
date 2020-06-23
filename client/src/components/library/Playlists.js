@@ -3,21 +3,23 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { getPlaylists } from '../../actions/playlist';
-import { loadUser } from '../../actions/auth';
-import PlaylistItem from './PlaylistItem';
 import ListItem from './ListItem';
 import Loader from '../layout/Loader';
-import store from '../../store';
 
-const Playlists = ({ getPlaylists, playlist: { playlists, loading } }) => {
+const Playlists = ({
+  ownedPlaylists,
+  getPlaylists,
+  playlist: { playlists, loading },
+}) => {
   useEffect(() => {
     async function load() {
-      await store.dispatch(loadUser());
       await getPlaylists();
     }
     load();
   }, [getPlaylists]);
-
+  playlists = ownedPlaylists
+    ? playlists.filter((playlist) => playlist.owner === true)
+    : playlists;
   return loading ? (
     <Loader />
   ) : (
@@ -43,6 +45,7 @@ Playlists.propTypes = {
 
 const mapStateToProps = (state) => ({
   playlist: state.playlist,
+  ownedPlaylists: state.filter.ownedPlaylists,
 });
 
 export default connect(mapStateToProps, { getPlaylists })(Playlists);

@@ -3,6 +3,7 @@ import alert from './alert';
 import auth from './auth';
 import playlist from './playlist';
 import library from './library';
+import filter from './filter';
 import importLibrary from './importLibrary';
 import { LOGOUT } from '../actions/types';
 
@@ -12,6 +13,7 @@ export const appReducer = combineReducers({
   importLibrary,
   playlist,
   library,
+  filter,
 });
 
 const rootReducer = (state, action) => {

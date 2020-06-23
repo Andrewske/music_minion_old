@@ -6,11 +6,17 @@ import rootReducer from './reducers';
 const middleware = [thunk];
 
 const saveToLocalStorage = (state) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem('state', serializedState);
-  } catch (err) {
-    console.error(err);
+  if (state.auth.isAuthenticated) {
+    try {
+      const serializedState = JSON.stringify(state);
+      localStorage.setItem('state', serializedState);
+    } catch (err) {
+      console.error(err);
+    }
+  } else {
+    console.log(
+      'Save to Local Storage Failed because user is not authenticated'
+    );
   }
 };
 
@@ -32,6 +38,12 @@ const store = createStore(
   composeWithDevTools(applyMiddleware(...middleware))
 );
 
-store.subscribe(() => saveToLocalStorage(store.getState()));
+store.subscribe(() => {
+  saveToLocalStorage(store.getState());
+});
+
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
 
 export default store;
