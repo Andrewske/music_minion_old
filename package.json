@@ -39,6 +39,7 @@
     "passport-local": "^1.0.0",
     "passport-spotify": "^1.1.0",
     "pg": "^8.2.1",
+    "pg-promise": "^10.7.3",
     "request": "^2.88.2",
     "uuid": "^8.1.0",
     "uuidv4": "^6.1.0"

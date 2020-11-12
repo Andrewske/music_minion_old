@@ -4,6 +4,7 @@ const SpotifyStrategy = require('passport-spotify').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 const { query } = require('./db');
+const { db } = require('./db-promise');
 const keys = require('./keys');
 
 // serialize the user.id to save in the cookie session
@@ -15,10 +16,10 @@ passport.serializeUser((user, done) => {
 // deserialize the cookieUserId to user in the database
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await query('SELECT * FROM users WHERE user_id = $1', [id]);
-    done(null, user.rows[0]);
+    const user = await db.one('SELECT * FROM users WHERE user_id = $1', [id]);
+    done(null, user);
   } catch (err) {
-    console.error(err.message);
+    console.error(`Error with deserializeUser: ${err.message}`);
   }
 });
 

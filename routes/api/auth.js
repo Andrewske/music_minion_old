@@ -2,6 +2,7 @@ const express = require('express');
 const Router = require('express-promise-router');
 const router = new Router();
 const { query } = require('../../config/db');
+const { db } = require('../../config/db-promise');
 const passport = require('passport');
 const CLIENT_LOGIN_REDIRECT = 'http://localhost:3000/explore';
 
@@ -10,13 +11,13 @@ const CLIENT_LOGIN_REDIRECT = 'http://localhost:3000/explore';
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const user = await query('SELECT * FROM users WHERE user_id = $1', [
+    const user = await db.one('SELECT * FROM users WHERE user_id = $1', [
       req.user.user_id,
     ]);
 
-    delete user.rows[0].password;
+    delete user.password;
 
-    res.json(user.rows[0]);
+    res.json(user);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -35,6 +36,7 @@ router.get('/logout', (req, res) => {
 // Login with Passport
 router.post('/login', function (req, res, next) {
   passport.authenticate('local', function (err, user, info) {
+    console.log('local Login');
     if (err) {
       const errors = [err];
       return res.status(400).json({ errors: errors });

@@ -1,6 +1,6 @@
 /* Global Styles */
 :root {
-  --primary-color: #17a2b8;
+  --primary-color: #1db954;
   --dark-color: #343a40;
   --light-color: #f4f4f4;
   --danger-color: #dc3545;
@@ -10,6 +10,8 @@
   --bg: #1a1a1a;
   --border: 1px solid #474a4d;
   --border-radius: 8px;
+  --scrollbarBG: #1db954;
+  --thumbBG: #90a4ae;
 }
 
 * {
@@ -43,11 +45,13 @@ img {
 
 /* Utilities */
 .container {
-  max-width: 1100px;
-  margin: auto;
+  width: 100%;
+  margin-left: 280px;
   padding: 0 2rem;
-  margin-top: 6rem;
+  margin-top: 64px;
   margin-bottom: 3rem;
+  height: 100%;
+  overflow-x: hidden !important;
 }
 
 /* Text Styles*/
@@ -301,15 +305,14 @@ button {
 .navbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0.7rem 2rem;
   position: fixed;
   z-index: 1;
+  height: 64px;
   width: 100%;
   top: 0;
-  border-bottom: solid 1px var(--primary-color);
+  box-shadow: 0px 0px 4px var(--primary-color);
   opacity: 1;
-  background: #1a1a1a;
+  background: #151818;
 }
 
 .navbar ul {
@@ -317,8 +320,9 @@ button {
 }
 
 .navbar a {
+  display: flex;
+  align-items: center;
   color: #fff;
-  padding: 0.45rem;
   margin: 0 0.25rem;
 }
 
@@ -328,6 +332,155 @@ button {
 
 .navbar .welcome span {
   margin-right: 0.6rem;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  height: 100%;
+  width: 280px;
+  top: 0;
+  left: 0;
+  z-index: auto;
+  margin-top: 64px;
+  padding-bottom: 64px;
+  background: #151818;
+  box-shadow: 0px 0px 4px var(--primary-color);
+}
+
+.sidebar-menu {
+  width: 100%;
+  height: 64px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0px 0px 4px var(--primary-color);
+}
+
+.sidebar-menu-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar a:hover {
+  color: var(--primary-color);
+}
+
+.sidebar-menu ul {
+  text-align: center;
+  padding: 10px;
+  margin-top: 50px;
+  background-color: #151818;
+  color: white;
+}
+
+.select-slidedown {
+  top: 0;
+  z-index: 1;
+  width: 140px;
+  height: auto;
+  max-height: 40em;
+  transition-duration: 0.8s;
+  transition-timing-function: ease-in-out;
+  overflow: hidden;
+  box-shadow: 0px 0px 4px var(--primary-color);
+}
+
+.select-slidedown.overlay {
+  position: absolute;
+}
+
+.sidebar-menu-filter {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-slidedown {
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 210px;
+  height: auto;
+  overflow: hidden;
+  max-height: 40em;
+  transition-duration: 0.8s;
+  transition-timing-function: ease-in-out;
+  box-shadow: 0px 0px 4px var(--primary-color);
+}
+.filter-slidedown ul {
+  text-align: left;
+  padding-left: 20px;
+}
+
+.filter-slidedown.overlay {
+  position: absolute;
+}
+
+.sort-slidedown {
+  top: 0;
+  right: 0;
+  z-index: 1;
+  width: 210px;
+  height: auto;
+  overflow: hidden;
+  max-height: 40em;
+  transition-duration: 0.8s;
+  transition-timing-function: ease-in-out;
+  box-shadow: 0px 0px 4px var(--primary-color);
+}
+.sort-slidedown ul {
+  text-align: right;
+  padding-left: 20px;
+}
+
+.sort-slidedown.overlay {
+  position: absolute;
+}
+
+.sort-checkbox {
+  float: right;
+  vertical-align: middle;
+  position: relative;
+}
+
+.sidebar-menu-title {
+  margin: auto !important;
+  text-align: center;
+}
+
+.sidebar-item-list {
+  height: 100%;
+  display: flex;
+  margin-top: 4px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  flex-direction: column;
+}
+
+.list-item {
+  padding: 0px;
+}
+
+.list-text {
+  margin-left: 10px;
+  margin-bottom: 0px;
+  white-space: nowrap;
+}
+
+.sidebar-item-list::-webkit-scrollbar {
+  width: 11px;
+}
+
+.sidebar-item-list::-webkit-scrollbar-track {
+  background: #151818;
+}
+.sidebar-item-list::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbarBG);
+  border-radius: 6px;
+  height: 25px;
+  border: 3px solid var(--scrollbarBG);
 }
 
 /* Landing Page */
@@ -556,6 +709,24 @@ button {
   font-size: 15pxpx;
   margin-bottom: 0px !important;
   cursor: 'pointer';
+}
+
+.playlist-img {
+  height: 100px;
+  width: 100px;
+  padding: 10px;
+}
+
+.tracks-title {
+  top: 0;
+  height: 128px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tracks-title h1 {
+  margin-bottom: 0px !important;
 }
 
 .track-item {
@@ -799,18 +970,18 @@ button {
   padding-bottom: 6px !important;
 }
 
-.genre {
+.genres {
   background-color: #1db954;
 }
-.playlist {
+.playlists {
   background-color: #4285f4;
 }
 
-.artist {
+.artists {
   background-color: #d51007;
 }
 
-.track {
+.tracks {
   background-color: #ff7700;
 }
 

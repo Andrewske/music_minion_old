@@ -1,5 +1,6 @@
 //const { getAllUserPlaylists } = require('../../models/playlist');
-const { query } = require('../config/db');
+//const { query } = require('../config/db');
+const { db } = require('../config/db-promise');
 
 module.exports = function (model1, model2) {
   return async (req, res, next) => {
@@ -10,7 +11,7 @@ module.exports = function (model1, model2) {
       const startIndex = (page - 1) * limit || null;
       const order = req.query.order || `${model2}_id`;
       const direction = req.query.dir === 'up' ? 'ASC' : 'DESC';
-      const results = await query(
+      const results = await db.any(
         `SELECT * FROM ${model2} 
         INNER JOIN ${model1}_${model2}
         ON ${model2}.${model2}_id = ${model1}_${model2}.${model2}_id 
@@ -21,7 +22,7 @@ module.exports = function (model1, model2) {
         `,
         [id]
       );
-      res.paginatedResults = results.rows;
+      res.paginatedResults = results;
 
       next();
     } catch (error) {

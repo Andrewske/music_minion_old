@@ -26,7 +26,7 @@ const DropdownMenu = ({ menu, addClass, ...props }) => {
         ref={dropdownRef}
         style={{ height: menuHeight }}
       >
-        {menu == 'TagMenu' && (
+        {menu === 'TagMenu' && (
           <TagMenu
             activeMenu={activeMenu}
             setActiveMenu={setActiveMenu}
@@ -38,14 +38,14 @@ const DropdownMenu = ({ menu, addClass, ...props }) => {
           />
         )}
 
-        {menu == 'SortMenu' && (
+        {menu === 'SortMenu' && (
           <SortMenu
             activeMenu={activeMenu}
             setActiveMenu={setActiveMenu}
             calcHeight={calcHeight}
           />
         )}
-        {menu == 'FilterMenu' && (
+        {menu === 'FilterMenu' && (
           <FilterMenu
             activeMenu={activeMenu}
             setActiveMenu={setActiveMenu}

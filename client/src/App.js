@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
+import Sidebar from './components/layout/Sidebar';
 import Landing from './components/layout/Landing';
 import Alert from './components/layout/Alert';
 import Register from './components/auth/Register';
@@ -27,6 +28,7 @@ const App = () => {
       <Router>
         <Fragment>
           <Navbar hidden={false} />
+          <Sidebar hidden={false} />
           <Route exact path='/' component={Landing} />
           <section className='container'>
             <Alert />

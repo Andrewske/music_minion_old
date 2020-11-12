@@ -48,30 +48,30 @@ const Filters = ({
   return (
     <span className='filter-bar'>
       <span className='filter-buttons'>
-        <button className='filter-btn playlist' onClick={ShowPlaylists}>
+        <button className='filter-btn playlists' onClick={ShowPlaylists}>
           Playlists
         </button>
-        <button className='filter-btn artist' onClick={ShowArtists}>
+        <button className='filter-btn artists' onClick={ShowArtists}>
           Artists
         </button>
-        <button className='filter-btn track' onClick={ShowTracks}>
+        <button className='filter-btn tracks' onClick={ShowTracks}>
           Tracks
         </button>
-        <button className='filter-btn genre' onClick={ShowGenres}>
+        <button className='filter-btn genres' onClick={ShowGenres}>
           Genres
         </button>
       </span>
       <span className='filter-buttons'>
         <FilterIcon
-          className='svg filter-icon playlist'
+          className='svg filter-icon playlists'
           ref={filterRef}
           onClick={ShowFilter}
         />
-        <BackIcon className='svg filter-icon artist' />
+        <BackIcon className='svg filter-icon artists' />
         <p style={{ margin: '3px' }}>1/100</p>
-        <NextIcon className='svg filter-icon track' />
+        <NextIcon className='svg filter-icon tracks' />
         <SortIcon
-          className='svg filter-icon genre'
+          className='svg filter-icon genres'
           ref={sortRef}
           onClick={ShowSort}
         ></SortIcon>

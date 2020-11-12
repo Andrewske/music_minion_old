@@ -2,6 +2,7 @@ const Router = require('express-promise-router');
 const router = new Router();
 const { query } = require('../../config/db');
 const _ = require('lodash');
+const { db } = require('../../config/db-promise');
 
 const pagination = require('../../middleware/pagination');
 
@@ -10,7 +11,61 @@ const pagination = require('../../middleware/pagination');
 // @access  Public
 router.get('/me', pagination('user', 'artist'), async (req, res) => {
   try {
-    return res.status(200).json(res.paginatedResults);
+    const user_id = req.user.user_id;
+    const artist_tracks_query = `
+      SELECT artist_id, COUNT(*) FROM user_track
+      INNER JOIN artist_track
+      ON user_track.track_id = artist_track.track_id
+      WHERE artist_track.artist_id = $1
+      AND user_track.user_id = $2
+      GROUP BY artist_id;
+    `;
+
+    const counts = await db
+      .tx((t) => {
+        return t.batch(
+          res.paginatedResults.map((artist) =>
+            t.one(artist_tracks_query, [artist.artist_id, user_id])
+          )
+        );
+      })
+      .then((data) => {
+        return data;
+      })
+      .catch((err) => {
+        console.error(`Error with db-promise: ${err}`);
+        if (err.name === 'BatchError') {
+          return err.data.map((data) => {
+            return data.success === true
+              ? data.result
+              : { artist_id: null, count: null };
+          });
+        }
+      });
+    if (counts) {
+      let results = res.paginatedResults.map((artist) => {
+        artist['count'] = counts.find(
+          (x) => (x.artist_id = artist.artist_id)
+        ).count;
+        return artist;
+      });
+      return res.status(200).json(results);
+    } else {
+      return res.status(500).json({ msg: 'DB Error' });
+    }
+
+    // let results = await Promise.all(
+    //   res.paginatedResults.map(async (artist) => {
+    //     let count = await query(artist_tracks_query, [
+    //       artist.artist_id,
+    //       user_id,
+    //     ]);
+    //     artist['track_count'] = count.rows[0].count || 0;
+    //     return artist;
+    //   })
+    // );
+    //const artist_id = res.paginatedResults[0].artist_id;
+    //let results = await query(artist_tracks_query, [artist_id, user_id]);
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

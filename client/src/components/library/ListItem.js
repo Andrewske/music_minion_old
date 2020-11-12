@@ -10,9 +10,9 @@ const ListItem = ({ getTracks, type, current }) => {
     getTracks(type, current);
   };
   return (
-    <div className='track-item'>
+    <div className='list-item'>
       <span style={{ cursor: 'pointer' }} onClick={() => onClick()}>
-        <p className='track-text'>{current.name}</p>
+        <p className='list-text'>{current.name}</p>
       </span>
     </div>
   );

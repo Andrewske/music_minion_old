@@ -31,17 +31,21 @@ const Tracks = ({
     : genre
     ? genre.name
     : null;
+  const img_url = playlist ? playlist.img_url : null;
   return loading && tracks.length > 0 ? (
     <Loader />
   ) : (
     <Fragment>
-      {name && (
-        <span style={{ cursor: 'pointer' }} onClick={(e) => onClick(e)}>
-          <h1>
-            <Back className='svg' style={{ fill: 'white' }} /> {name}
-          </h1>
-        </span>
-      )}
+      <div className='tracks-title'>
+        {name && (
+          <Fragment>
+            {img_url && (
+              <img className='playlist-img' src={img_url} alt={name} />
+            )}
+            <h1>{name}</h1>
+          </Fragment>
+        )}
+      </div>
       {playlist_features && <AudioFeatures features={playlist_features} />}
       <div className='item-list'>
         {tracks.map((track) => (
