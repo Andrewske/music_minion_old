@@ -50,6 +50,7 @@ export const getTracks = (type, current) => async (dispatch) => {
     console.log(url);
     let res = await axios.get(url);
     const { tracks, audio_features } = res.data;
+    console.log(`audio_features: ${audio_features}`);
     dispatch({
       type: LOAD_TRACKS,
       payload: { artist, playlist, tag, tracks, audio_features },

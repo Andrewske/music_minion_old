@@ -1,24 +1,22 @@
 const pool = require('../config/db');
+const { db } = require('../config/db-promise');
+const _ = require('lodash');
 
 exports.getTag = async (name, type) => {
   try {
-    const tag = await pool.query(
-      'SELECT * FROM tag WHERE name = $1 and type = $2',
-      [name, type]
-    );
-    if (tag.rows.length > 0) {
-      return tag.rows[0];
-    } else {
-      return false;
-    }
+    return await db.one('SELECT * FROM tag WHERE name = $1 and type = $2', [
+      name,
+      type,
+    ]);
   } catch (err) {
-    console.error(err.message);
+    console.error(`Error getTag: ${err.message}`);
+    return null;
   }
 };
 
 exports.addTag = async (name, type) => {
   try {
-    tag = await pool.query(
+    return await db.one(
       `
         INSERT INTO tag
         (name, type)
@@ -27,10 +25,9 @@ exports.addTag = async (name, type) => {
         `,
       [name, type]
     );
-    return tag.rows[0];
   } catch (err) {
-    console.log('Error Creating tag');
-    console.error(err.message);
+    console.error(`Error addTag: ${err.message}`);
+    return null;
   }
 };
 

@@ -29,13 +29,16 @@ const Sidebar = ({
     filter: false,
     sort: false,
   });
+
   const [option, setOption] = useState('Playlists');
+
   const defaultSort = {
     az: false,
     za: false,
     most: false,
     least: false,
   };
+
   const [sort, setSort] = useState({
     az: false,
     za: false,
@@ -49,7 +52,8 @@ const Sidebar = ({
 
   const handleClick = (e, type, value) => {
     e.preventDefault();
-    if (type === 'option') {
+    if (type === 'select') {
+      console.log(value);
       setOption(value);
       setOpen({ ...open, select: false });
     }

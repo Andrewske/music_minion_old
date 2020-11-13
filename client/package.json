@@ -54,6 +54,7 @@
     ]
   },
   "proxy": "http://localhost:5000",
+  "secure": false,
   "devDependencies": {
     "@svgr/webpack": "^5.4.0",
     "babel-plugin-styled-components": "^1.10.7"

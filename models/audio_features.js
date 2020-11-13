@@ -1,5 +1,6 @@
 const { query } = require('../config/db');
 const _ = require('lodash');
+const { db } = require('../config/db-promise');
 
 exports.addAudioFeatures = async (features) => {
   try {
@@ -54,65 +55,6 @@ exports.addAudioFeatures = async (features) => {
     throw e;
   }
 };
-// exports.addAudioFeatures = async (features) => {
-//   const client = await pool.connect();
-//   try {
-//     await client.query('BEGIN');
-//     const asyncRes = await Promise.all(
-//       features.map(
-//         async ({
-//           danceability,
-//           energy,
-//           key,
-//           loudness,
-//           mode,
-//           speechiness,
-//           acousticness,
-//           instrumentalness,
-//           liveness,
-//           valence,
-//           tempo,
-//           id,
-//           duration_ms,
-//           time_signature,
-//         }) => {
-//           const insertText = `
-//               INSERT INTO audio_features (track_id, danceability, energy, track_key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration_ms, time_signature)
-//               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-//               ON CONFLICT (track_id)
-//               DO UPDATE
-//               SET energy = EXCLUDED.energy
-//               RETURNING *`;
-//           const insertValues = [
-//             id,
-//             danceability,
-//             energy,
-//             key,
-//             loudness,
-//             mode,
-//             speechiness,
-//             acousticness,
-//             instrumentalness,
-//             liveness,
-//             valence,
-//             tempo,
-//             duration_ms,
-//             time_signature,
-//           ];
-//           const res = await client.query(insertText, insertValues);
-//           return res.rows;
-//         }
-//       )
-//     );
-//     await client.query('COMMIT');
-//     return asyncRes;
-//   } catch (e) {
-//     await client.query('ROLLBACK');
-//     throw e;
-//   } finally {
-//     await client.release();
-//   }
-// };
 
 exports.getTrackAudioFeatures = async (track_id) => {
   try {
@@ -134,7 +76,7 @@ exports.getTrackAudioFeatures = async (track_id) => {
 
 exports.getPlaylistAudioFeatures = async (playlist_id) => {
   try {
-    const results = await query(
+    const results = await db.any(
       `
           SELECT * FROM audio_features
           INNER JOIN track on audio_features.track_id = track.track_id
@@ -156,7 +98,7 @@ exports.getPlaylistAudioFeatures = async (playlist_id) => {
       }
     };
 
-    const af = results.rows;
+    const af = results;
     // Get the average for features
 
     const features = {
@@ -175,7 +117,7 @@ exports.getPlaylistAudioFeatures = async (playlist_id) => {
     };
     return features;
   } catch (err) {
-    console.error(`Error getting playlist features: ${err.message}`);
+    console.error(`Error getting playlist features: ${err}`);
     return null;
   }
 };

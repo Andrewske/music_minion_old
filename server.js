@@ -7,6 +7,7 @@ const cors = require('cors');
 const keys = require('./config/keys');
 const app = express();
 const path = require('path');
+var bodyParser = require('body-parser');
 
 // const apiTimeout = 10 * 1000;
 // app.use((req, res, next) => {
@@ -38,6 +39,13 @@ app.use(cookieParser());
 app.use(passport.initialize());
 // deserialize cookie from the browser
 app.use(passport.session());
+
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+app.use(bodyParser.json());
 
 // Cors setup
 app.use(

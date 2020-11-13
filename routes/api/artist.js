@@ -33,7 +33,7 @@ router.get('/me', pagination('user', 'artist'), async (req, res) => {
         return data;
       })
       .catch((err) => {
-        console.error(`Error with db-promise: ${err}`);
+        console.error(`Error getting artist track counts: ${err}`);
         if (err.name === 'BatchError') {
           return err.data.map((data) => {
             return data.success === true

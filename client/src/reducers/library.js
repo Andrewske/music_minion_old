@@ -38,7 +38,7 @@ export default function (state = initialState, action) {
         playlist: payload.playlist,
         tracks: payload.tracks,
         genre: payload.tag,
-        playlist_features: payload.playlist_features,
+        playlist_features: payload.audio_features,
         loading: false,
       };
     case CLEAR_TRACKS:

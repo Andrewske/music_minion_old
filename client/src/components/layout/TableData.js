@@ -21,6 +21,7 @@ const TableData = (tracks) => {
       return moment({ cell }).format('MMM-YYYY');
     };
     return {
+      track_id: track.track_id,
       name: track.name,
       artists: _.join(
         track.artists.map((artist) => artist.name),

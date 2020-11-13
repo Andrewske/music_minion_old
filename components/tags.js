@@ -11,15 +11,14 @@ const { getPlaylistTag, addPlaylistTag } = require('../models/playlist_tag');
 exports.createArtistTag = async ({ artist_id, user_id, name, type }) => {
   try {
     const tag = (await getTag(name, type)) || (await addTag(name, type));
-
     const artist_tag =
       (await getArtistTag(artist_id, tag.tag_id)) ||
       (await addArtistTag(artist_id, user_id, tag.tag_id));
 
     return { tag, artist_tag };
   } catch (err) {
-    console.log('Error creating artist tags');
-    console.error(err);
+    console.error(`Error createArtistTag: ${err}`);
+    return null;
   }
 };
 
@@ -28,28 +27,30 @@ exports.createTrackTag = async ({ user_id, track_id, name, type }) => {
     const tag = (await getTag(name, type)) || (await addTag(name, type));
 
     const track_tag =
-      (await getTrackTag(track_id, tag.tag_id)) ||
+      (await getTrackTag(track_id, user_id, tag.tag_id)) ||
       (await addTrackTag(track_id, user_id, tag.tag_id));
 
     return { tag, track_tag };
   } catch (err) {
-    console.log('Error creating track tag');
-    console.error(err);
+    console.error(`Error createTrackTag: ${err}`);
+    return null;
   }
 };
 
-exports.createUserTag = async ({ user_id, name, type }) => {
+exports.createUserTag = async ({ user_id, name, type }, tag = null) => {
   try {
-    const tag = (await getTag(name, type)) || (await addTag(name, type));
-
+    if (!tag) {
+      tag = (await getTag(name, type)) || (await addTag(name, type));
+    }
+    console.log(`tag: ${JSON.stringify(tag)}`);
     const user_tag =
       (await getUserTag(user_id, tag.tag_id)) ||
       (await addUserTag(user_id, tag.tag_id));
 
     return { tag, user_tag };
   } catch (err) {
-    console.log('Error creating user tag');
-    console.error(err);
+    console.error(`Error createUserTag: ${err}`);
+    return null;
   }
 };
 
@@ -63,8 +64,8 @@ exports.createPlaylistTag = async ({ playlist_id, user_id, name, type }) => {
 
     return { tag, playlist_tag };
   } catch (err) {
-    console.log('Error creating playlist tag');
-    console.error(err);
+    console.error(`Error createPlaylistTag: ${err}`);
+    return null;
   }
 };
 

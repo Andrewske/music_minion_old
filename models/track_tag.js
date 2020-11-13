@@ -1,25 +1,21 @@
 const pool = require('../config/db');
+const { db } = require('../config/db-promise');
 
-exports.getTrackTag = async (track_id, tag_id) => {
+exports.getTrackTag = async (track_id, user_id, tag_id) => {
   try {
-    const trackTag = await pool.query(
-      'SELECT * FROM track_tag WHERE track_id = $1 and tag_id = $2',
-      [track_id, tag_id]
+    return await db.one(
+      'SELECT * FROM track_tag WHERE track_id = $1 and tag_id = $2 and user_id = $3',
+      [track_id, tag_id, user_id]
     );
-    if (trackTag.rows.length > 0) {
-      return trackTag.rows[0];
-    } else {
-      return false;
-    }
   } catch (err) {
-    console.log('Error finding track Tag');
-    console.error(err.message);
+    console.error(`Error getTrackTag: ${err.message}`);
+    return null;
   }
 };
 
 exports.addTrackTag = async (track_id, user_id, tag_id) => {
   try {
-    trackTag = await pool.query(
+    return await db.one(
       `
             INSERT INTO track_tag
             (track_id,user_id, tag_id)
@@ -28,10 +24,9 @@ exports.addTrackTag = async (track_id, user_id, tag_id) => {
             `,
       [track_id, user_id, tag_id]
     );
-    return trackTag.rows[0];
   } catch (err) {
-    console.log('Error creating track Tag');
-    console.error(err.message);
+    console.error(`Error addTrackTag: ${err.message}`);
+    return null;
   }
 };
 

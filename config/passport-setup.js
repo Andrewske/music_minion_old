@@ -19,7 +19,7 @@ passport.deserializeUser(async (id, done) => {
     const user = await db.one('SELECT * FROM users WHERE user_id = $1', [id]);
     done(null, user);
   } catch (err) {
-    console.error(`Error with deserializeUser: ${err.message}`);
+    console.error(`Error with deserializeUser: ${err}`);
   }
 });
 

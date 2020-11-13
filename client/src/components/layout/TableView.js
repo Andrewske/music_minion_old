@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import TableData from './TableData';
 import Table from './Table';
 
-const TableView = ({ library: { playlist, tracks } }) => {
+const TableView = ({ library: { playlist, artist, tracks } }) => {
   const keys = {
     '8B': '#EE82D9',
     '5A': '#FDBFA7',
@@ -31,14 +31,20 @@ const TableView = ({ library: { playlist, tracks } }) => {
     '10A': '#BECDFD',
   };
 
+  const header = artist ? artist.name : playlist.name;
+
   const columns = useMemo(() => [
     {
-      Header: playlist.name,
+      Header: header,
       columns: [
+        {
+          Header: 'Track ID',
+          accessor: 'track_id',
+          isVisible: true,
+        },
         {
           Header: 'Track Name',
           accessor: 'name',
-          editable: true,
         },
         {
           Header: 'Artists',

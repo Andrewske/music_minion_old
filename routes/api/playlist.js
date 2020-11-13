@@ -8,6 +8,8 @@ const { getTrackArtists } = require('../../models/artist');
 const { getPlaylistAudioFeatures } = require('../../models/audio_features');
 const pagination = require('../../middleware/pagination');
 
+const { db } = require('../../config/db-promise');
+
 router.get('/testing', async (req, res) => {
   console.log('hitting this route');
   try {
@@ -59,20 +61,40 @@ router.get('/:id', pagination('playlist', 'track'), async (req, res) => {
     WHERE track_tag.track_id = ANY($1::text[])
     `;
 
-    const artists = await query(artist_query, [track_ids]); //Promise.all(_.map(track_ids, getTrackArtists));
-    const audio_features = await query(af_query, [track_ids]); //Promise.all(_.map(track_ids, getTrackArtists));
-    const tags = await query(tags_query, [track_ids]); //Promise.all(_.map(track_ids, getTrackArtists));
+    // const artists = await query(artist_query, [track_ids]); //Promise.all(_.map(track_ids, getTrackArtists));
+    // const audio_features = await query(af_query, [track_ids]); //Promise.all(_.map(track_ids, getTrackArtists));
+    // const tags = await query(tags_query, [track_ids]); //Promise.all(_.map(track_ids, getTrackArtists));
+    const { artists, audio_features, tags } = await db.tx((t) => {
+      return t
+        .batch([
+          t.any(artist_query, [track_ids]),
+          t.any(af_query, [track_ids]),
+          t.any(tags_query, [track_ids]),
+        ])
+        .then((data) => {
+          return {
+            artists: data[0],
+            audio_features: data[1],
+            tags: data[2],
+          };
+        })
+        .catch((err) => {
+          console.error(`Error getting playlist data: ${err}`);
+        });
+    });
+
     tracks = tracks.map((track) => ({
       ...track,
-      artists: _.filter(artists.rows, { track_id: track.track_id }),
-      audio_features: _.filter(audio_features.rows, {
+      artists: _.filter(artists, { track_id: track.track_id }),
+      audio_features: _.filter(audio_features, {
         track_id: track.track_id,
       }),
-      tags: _.filter(tags.rows, { track_id: track.track_id }),
+      tags: _.filter(tags, { track_id: track.track_id }),
     }));
+
     const playlist_features = await getPlaylistAudioFeatures(req.params.id);
 
-    return res.status(200).json({ tracks, playlist_features });
+    return res.status(200).json({ tracks, audio_features: playlist_features });
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

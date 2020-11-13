@@ -2,49 +2,54 @@ import React from 'react';
 import { useTable, useSortBy } from 'react-table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import BTable from 'react-bootstrap/Table';
+import EditableCell from './EditableCell';
 
 const defaultPropGetter = () => ({});
 
-// Create an editable cell renderer
-const EditableCell = ({
-  value: initialValue,
-  row: { index },
-  column: { id },
-  updateMyData, // This is a custom function that we supplied to our table instance
-  editable,
-}) => {
-  // We need to keep and update the state of the cell normally
-  const [value, setValue] = React.useState(initialValue);
+// // Create an editable cell renderer
+// const EditableCell = ({
+//   value: initialValue,
+//   row: { index },
+//   column: { id },
+//   updateMyData, // This is a custom function that we supplied to our table instance
+//   editable,
+//   cell,
+// }) => {
+//   // We need to keep and update the state of the cell normally
+//   const [value, setValue] = React.useState(initialValue);
 
-  const onChange = (e) => {
-    setValue(e.target.value);
-  };
+//   const onChange = (e) => {
+//     setValue(e.target.value);
+//   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    console.log(value);
-  };
+//   const onSubmit = (e) => {
+//     e.preventDefault();
+//     let track_id = cell.row.values.track_id;
+//     let tags = value.split(',');
+//     let orginal_tags =
+//     console.log(tags);
+//   };
 
-  // We'll only update the external data when the input is blurred
-  const onBlur = () => {
-    updateMyData(index, id, value);
-  };
+//   // We'll only update the external data when the input is blurred
+//   const onBlur = () => {
+//     updateMyData(index, id, value);
+//   };
 
-  // If the initialValue is changed externall, sync it up with our state
-  React.useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+//   // If the initialValue is changed externall, sync it up with our state
+//   React.useEffect(() => {
+//     setValue(initialValue);
+//   }, [initialValue]);
 
-  if (!editable) {
-    return `${initialValue}`;
-  }
+//   if (!editable) {
+//     return `${initialValue}`;
+//   }
 
-  return (
-    <form onSubmit={onSubmit}>
-      <input value={value} onChange={onChange} onBlur={onBlur} />
-    </form>
-  );
-};
+//   return (
+//     <form onSubmit={onSubmit}>
+//       <input value={value} onChange={onChange} onBlur={onBlur} />
+//     </form>
+//   );
+// };
 
 // Set our editable cell renderer as the default Cell renderer
 const defaultColumn = {
@@ -67,6 +72,7 @@ const Table = ({
     headerGroups,
     rows,
     prepareRow,
+    setHiddenColumns,
   } = useTable(
     {
       columns,
@@ -74,6 +80,9 @@ const Table = ({
       defaultColumn,
       autoResetPage: !skipPageReset,
       updateMyData,
+      initialState: {
+        hiddenColumns: ['track_id'],
+      },
     },
     useSortBy
   );
@@ -122,7 +131,7 @@ const Table = ({
                     ])}
                   >
                     {cell.column.id === 'tags'
-                      ? cell.render('Cell', { editable: true })
+                      ? cell.render('Cell', { editable: true, cell: cell })
                       : cell.render('Cell', { editable: false })}
                   </td>
                 );

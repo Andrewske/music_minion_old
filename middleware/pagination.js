@@ -26,7 +26,7 @@ module.exports = function (model1, model2) {
 
       next();
     } catch (error) {
-      console.error(error);
+      console.error(`Pagination error: ${error}`);
       res.status(401).json({ msg: 'No Pagination' });
     }
   };
