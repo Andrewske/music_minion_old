@@ -11,7 +11,7 @@ const saveToLocalStorage = (state) => {
       const serializedState = JSON.stringify(state);
       localStorage.setItem('state', serializedState);
     } catch (err) {
-      console.error(err);
+      console.error(`saveToLocalStorage error: ${err}`);
     }
   } else {
     console.log(
@@ -25,7 +25,7 @@ const loadFromLocalStorage = () => {
     const serializedState = localStorage.getItem('state');
     return serializedState ? JSON.parse(serializedState) : undefined;
   } catch (err) {
-    console.error(err);
+    console.error(`loadFromLocalStorage error: ${err}`);
     return undefined;
   }
 };
@@ -40,10 +40,6 @@ const store = createStore(
 
 store.subscribe(() => {
   saveToLocalStorage(store.getState());
-});
-
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.auth.isAuthenticated,
 });
 
 export default store;

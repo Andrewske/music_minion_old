@@ -2,12 +2,12 @@ import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { ReactComponent as FilterIcon } from '../../img/filter.svg';
 import { ReactComponent as SortIcon } from '../../img/sort.svg';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { SlideDown } from 'react-slidedown';
 import Playlists from '../library/Playlists';
 import Artists from '../library/Artists';
 import Genres from '../library/Genres';
 import Loader from './Loader';
+
 import {
   SHOW_PLAYLISTS,
   CLEAR_TRACKS,
@@ -16,12 +16,13 @@ import {
 
 const Sidebar = ({
   hidden = false,
-  playlist: { loading, playlists },
+  playlist: { loading },
   ShowFilter,
   ShowSort,
   ShowPlaylists,
   OwnedPlaylists,
   ownedPlaylists,
+  isAuthenticated,
 }) => {
   const [open, setOpen] = useState({
     select: false,
@@ -29,18 +30,35 @@ const Sidebar = ({
     sort: false,
   });
   const [option, setOption] = useState('Playlists');
-  const [filter, setFilter] = useState({
-    owned: false,
+  const defaultSort = {
+    az: false,
+    za: false,
+    most: false,
+    least: false,
+  };
+  const [sort, setSort] = useState({
+    az: false,
+    za: false,
+    most: false,
+    least: false,
   });
 
   useEffect(() => {
     ShowPlaylists();
-  }, []);
+  }, [ShowPlaylists]);
 
-  const handleClick = (e, value) => {
+  const handleClick = (e, type, value) => {
     e.preventDefault();
-    setOption(value);
-    setOpen({ ...open, select: false });
+    if (type === 'option') {
+      setOption(value);
+      setOpen({ ...open, select: false });
+    }
+    if (type === 'sort') {
+      console.log(type, value);
+      setSort({ ...defaultSort, [value]: true });
+      setOpen({ ...open, sort: false });
+      console.log(sort);
+    }
   };
 
   const filterRef = useRef(null);
@@ -55,9 +73,8 @@ const Sidebar = ({
             value='owned'
             checked={ownedPlaylists}
             onChange={OwnedPlaylists}
-            defaultChecked={false}
           />{' '}
-          <label for='owned'>Playlist I Created</label>
+          <label htmlFor='owned'>Playlist I Created</label>
         </form>
       </li>
     </ul>
@@ -66,20 +83,29 @@ const Sidebar = ({
   const sortItems = (
     <ul>
       <li>
-        <form>
-          <input
-            type='checkbox'
-            name='sort'
-            value='sort'
-            checked={ownedPlaylists}
-            onChange={OwnedPlaylists}
-            defaultChecked={false}
-            className='sort-checkbox'
-          />{' '}
-          <label for='sort' className='sort-checkbox'>
-            Playlist I Created
-          </label>
-        </form>
+        <a href='/#' onClick={(e) => handleClick(e, 'sort', 'default')}>
+          Default
+        </a>
+      </li>
+      <li>
+        <a href='/#' onClick={(e) => handleClick(e, 'sort', 'az')}>
+          A-Z
+        </a>
+      </li>
+      <li>
+        <a href='/#' onClick={(e) => handleClick(e, 'sort', 'za')}>
+          Z-A
+        </a>
+      </li>
+      <li>
+        <a href='/#' onClick={(e) => handleClick(e, 'sort', 'most')}>
+          Most Tracks
+        </a>
+      </li>
+      <li>
+        <a href='/#' onClick={(e) => handleClick(e, 'sort', 'least')}>
+          Least Tracks
+        </a>
       </li>
     </ul>
   );
@@ -87,17 +113,17 @@ const Sidebar = ({
   const selectItems = (
     <ul>
       <li>
-        <a href='/#' onClick={(e) => handleClick(e, 'Playlists')}>
+        <a href='/#' onClick={(e) => handleClick(e, 'select', 'Playlists')}>
           Playlists
         </a>
       </li>
       <li>
-        <a href='/#' onClick={(e) => handleClick(e, 'Artists')}>
+        <a href='/#' onClick={(e) => handleClick(e, 'select', 'Artists')}>
           Artists
         </a>
       </li>
       <li>
-        <a href='/#' onClick={(e) => handleClick(e, 'Genres')}>
+        <a href='/#' onClick={(e) => handleClick(e, 'select', 'Genres')}>
           Genres
         </a>
       </li>
@@ -106,7 +132,7 @@ const Sidebar = ({
 
   return (
     <Fragment>
-      <nav className={hidden ? 'hidden' : 'sidebar'}>
+      <nav className={isAuthenticated ? 'sidebar' : 'hidden'}>
         <span className='sidebar-menu'>
           <span
             className='sidebar-menu-select'
@@ -139,7 +165,7 @@ const Sidebar = ({
           <span
             className='sidebar-menu-select'
             onMouseOver={() => setOpen({ ...open, sort: true })}
-            //onMouseLeave={() => setOpen({ ...open, sort: false })}
+            onMouseLeave={() => setOpen({ ...open, sort: false })}
           >
             <SortIcon
               className='svg filter-icon genres'
@@ -156,7 +182,7 @@ const Sidebar = ({
           <Loader />
         ) : (
           <div className='sidebar-item-list'>
-            {option === 'Playlists' ? <Playlists /> : null}
+            {option === 'Playlists' ? <Playlists sort={sort} /> : null}
             {option === 'Artists' ? <Artists /> : null}
             {option === 'Genres' ? <Genres /> : null}
           </div>
@@ -166,14 +192,15 @@ const Sidebar = ({
   );
 };
 
-Sidebar.propTypes = {
-  CloseFilter: PropTypes.func.isRequired,
-  CloseSort: PropTypes.func.isRequired,
-  ShowFilter: PropTypes.func.isRequired,
-  ShowSort: PropTypes.func.isRequired,
-};
+// Sidebar.propTypes = {
+//   CloseFilter: PropTypes.func.isRequired,
+//   CloseSort: PropTypes.func.isRequired,
+//   ShowFilter: PropTypes.func.isRequired,
+//   ShowSort: PropTypes.func.isRequired,
+// };
 
 const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
   playlist: state.playlist,
   showPlaylists: state.filter.showPlaylists,
   showArtists: state.filter.showArtists,

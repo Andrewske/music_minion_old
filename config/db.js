@@ -34,7 +34,6 @@ pool.on('error', (err, client) => {
 // };
 
 exports.query = async (text, values) => {
-  console.log(`start a query: ${text}, ${values}`);
   const client = await pool.connect();
   let res;
   try {

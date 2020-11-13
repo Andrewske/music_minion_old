@@ -5,8 +5,10 @@ import PropTypes from 'prop-types';
 import { getPlaylists } from '../../actions/playlist';
 import ListItem from './ListItem';
 import Loader from '../layout/Loader';
+import _ from 'lodash';
 
 const Playlists = ({
+  sort = null,
   ownedPlaylists,
   getPlaylists,
   playlist: { playlists, loading },
@@ -20,6 +22,18 @@ const Playlists = ({
   playlists = ownedPlaylists
     ? playlists.filter((playlist) => playlist.owner === true)
     : playlists;
+
+  if (sort) {
+    playlists = sort.az ? _.orderBy(playlists, ['name'], ['asc']) : playlists;
+    playlists = sort.za ? _.orderBy(playlists, ['name'], ['desc']) : playlists;
+    playlists = sort.most
+      ? _.orderBy(playlists, ['size'], ['desc'])
+      : playlists;
+    playlists = sort.least
+      ? _.orderBy(playlists, ['size'], ['asc'])
+      : playlists;
+  }
+
   return loading ? (
     <Loader />
   ) : (
@@ -31,6 +45,7 @@ const Playlists = ({
             key={playlist.playlist_id}
             type='playlist'
             current={playlist}
+            count={playlist.size}
           />
         ))}
       </div>

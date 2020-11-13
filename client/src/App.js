@@ -28,11 +28,12 @@ const App = () => {
       <Router>
         <Fragment>
           <Navbar hidden={false} />
-          <Sidebar hidden={false} />
+
           <Route exact path='/' component={Landing} />
-          <section className='container'>
+          <section className='container-fluid'>
             <Alert />
             <ImportLibrary />
+            <Sidebar />
             <Switch>
               <Route exact path='/register' component={Register} />
               <Route exact path='/login' component={Login} />
@@ -47,5 +48,9 @@ const App = () => {
     </Provider>
   );
 };
+
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
 
 export default App;

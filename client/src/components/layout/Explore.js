@@ -5,6 +5,7 @@ import Playlists from '../library/Playlists';
 import Artists from '../library/Artists';
 import Tracks from '../library/Tracks';
 import Genres from '../library/Genres';
+import TableView from '../layout/TableView';
 import Filters from '../filter/Filters';
 
 const Explore = ({
@@ -19,8 +20,9 @@ const Explore = ({
       {/* <Filters /> */}
 
       {showPlaylists && tracks.length !== 0 ? (
-        <Tracks />
+        <TableView />
       ) : (
+        //<Tracks />
         showPlaylists && <Playlists />
       )}
       {showArtists && tracks.length !== 0 ? (

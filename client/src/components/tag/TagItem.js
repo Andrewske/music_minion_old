@@ -4,7 +4,7 @@ import { ReactComponent as CancelIcon } from '../../img/close.svg';
 import DropdownMenu from '../dropdown/DropdownMenu';
 
 const TagItem = ({
-  removeTag,
+  removeTag = null,
   tagId,
   tagData,
   setTagData,
