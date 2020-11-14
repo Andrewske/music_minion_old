@@ -7,8 +7,7 @@ import { LOAD_ARTISTS, LIBRARY_ERROR } from './types';
 
 export const getArtists = () => async (dispatch) => {
   try {
-    const res = await axios.get('/api/artist/me?limit=10&page=1');
-    console.log(res.data);
+    const res = await axios.get('/api/artist/me');
     dispatch({
       type: LOAD_ARTISTS,
       payload: res.data,

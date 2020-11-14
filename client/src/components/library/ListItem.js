@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 //import { Img } from 'react-image';
 import { getTracks } from '../../actions/library';
 
-const ListItem = ({ getTracks, type, current }) => {
+const ListItem = ({ getTracks, type, current, count }) => {
   const onClick = () => {
     getTracks(type, current);
   };
@@ -16,7 +16,7 @@ const ListItem = ({ getTracks, type, current }) => {
       onClick={() => onClick()}
     >
       <p className='list-text'>{current.name}</p>
-      <p className='count'>{current.size}</p>
+      <p className='count'>{count}</p>
     </div>
   );
 };

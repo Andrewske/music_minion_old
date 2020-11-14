@@ -32,17 +32,14 @@ exports.addTrackTag = async (track_id, user_id, tag_id) => {
 
 exports.removeTrackTag = async (track_id, user_id, tag_id) => {
   try {
-    trackTag = await pool.query(
+    return await db.one(
       `
             DELETE FROM track_tag
             WHERE track_id = $1 AND user_id = $2 AND tag_id = $3
             `,
       [track_id, user_id, tag_id]
     );
-    console.log(trackTag);
-    return trackTag.rows[0];
   } catch (err) {
-    console.log('Error deleting track Tag');
-    console.error(err.message);
+    console.error(`Error removeTrackTag: ${err.message}`);
   }
 };

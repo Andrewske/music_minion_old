@@ -16,17 +16,9 @@ const tags = require('../../components/tags');
 
 router.post('/track', async (req, res) => {
   try {
-    console.log(req.body);
     const { tag, track_tag } = await tags.createTrackTag(req.body);
     const { user_tag } = tag ? await tags.createUserTag(req.body, tag) : null;
 
-    //Create a track tag which goes to components
-    //either get_tag or add_tag from models/tag
-    //insead we could insert or update
-    //console.log(req.body);
-    //const { type, name, track_id, user_id } = req.body;
-
-    console.log(`newTag: ${tag}`);
     res.status(200).json({ tag, track_tag, user_tag });
   } catch (err) {
     console.error(err);

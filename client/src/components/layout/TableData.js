@@ -5,21 +5,20 @@ import convertAudioFeatures from '../../utils/convertAudioFeatures';
 
 const TableData = (tracks) => {
   const newTrack = (track) => {
-    let audio_features = {
-      tempo: null,
-      duration: null,
-      key: null,
-      featureGraph: null,
-    };
-    try {
-      audio_features = convertAudioFeatures(track.audio_features[0]);
-    } catch (error) {
-      console.log('No Audio Features');
+    let audio_features = null;
+    if (track.audio_features[0]) {
+      try {
+        audio_features = convertAudioFeatures(track.audio_features[0]);
+      } catch (error) {
+        console.log(track);
+        console.log('No Audio Features');
+      }
     }
 
     const dateFormatter = (cell) => {
       return moment({ cell }).format('MMM-YYYY');
     };
+
     return {
       track_id: track.track_id,
       name: track.name,
@@ -27,13 +26,27 @@ const TableData = (tracks) => {
         track.artists.map((artist) => artist.name),
         ', '
       ),
-      bpm: audio_features.tempo,
-      key: audio_features.key.camelot,
-      tags: _.join(
-        track.tags.map((tag) => tag.name),
-        ','
+      bpm: audio_features ? audio_features.tempo : 0,
+      key: audio_features ? audio_features.key.camelot : 'NaN',
+      genre_tags: _.join(
+        _.compact(
+          track.tags.map((tag) => (tag.type === 'genre' ? tag.name : null))
+        ),
+        ', '
       ),
-      duration: audio_features.duration,
+      playlist_tags: _.join(
+        _.compact(
+          track.tags.map((tag) => (tag.type === 'playlist' ? tag.name : null))
+        ),
+        ', '
+      ),
+      misc_tags: _.join(
+        _.compact(
+          track.tags.map((tag) => (tag.type === 'misc' ? tag.name : null))
+        ),
+        ', '
+      ),
+      duration: audio_features ? audio_features.duration : 0,
       added_at: dateFormatter(track.added_at),
     };
   };

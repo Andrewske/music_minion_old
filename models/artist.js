@@ -21,34 +21,6 @@ exports.addArtists = async (artists) => {
     throw e;
   }
 };
-// exports.addArtists = async (artists) => {
-//   const client = await pool.connect();
-
-//   try {
-//     await client.query('BEGIN');
-//     const asyncRes = await Promise.all(
-//       artists.map(async ({ artist_id, name }) => {
-//         const insertText = `
-//             INSERT INTO artist (artist_id, name)
-//             VALUES ($1, $2)
-//             ON CONFLICT (artist_id)
-//             DO UPDATE SET name = artist.name
-//             RETURNING *`;
-//         const insertValues = [artist_id, name];
-//         const res = await client.query(insertText, insertValues);
-//         return res.rows[0];
-//       })
-//     );
-//     await client.query('COMMIT');
-//     return asyncRes;
-//   } catch (e) {
-//     await client.query('ROLLBACK');
-//     console.error('Error Inserting user_tracks');
-//     throw e;
-//   } finally {
-//     await client.release();
-//   }
-// };
 
 exports.getArtist = async (artist_id) => {
   try {

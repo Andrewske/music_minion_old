@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import TableData from './TableData';
 import Table from './Table';
+import TableTagSelector from './TableTagSelector';
 
-const TableView = ({ library: { playlist, artist, tracks } }) => {
+const TableView = ({ library: { playlist, artist, genre, tracks } }) => {
   const keys = {
     '8B': '#EE82D9',
     '5A': '#FDBFA7',
@@ -31,7 +32,34 @@ const TableView = ({ library: { playlist, artist, tracks } }) => {
     '10A': '#BECDFD',
   };
 
-  const header = artist ? artist.name : playlist.name;
+  let header = 'None';
+  if (artist) {
+    header = artist.name;
+  }
+  if (playlist) {
+    header = playlist.name;
+  }
+  if (genre) {
+    header = genre.name;
+  }
+
+  const [tagSelection, setTagSelection] = useState('genre');
+
+  useEffect(() => {
+    //console.log(tagSelection);
+    //const newHiddenColumns = hiddenColumns(tagSelection);
+  }, [tagSelection]);
+
+  const hiddenColumns = (tagSelection) => {
+    switch (tagSelection) {
+      case 'playlist':
+        return ['track_id', 'genre_tags', 'misc_tags'];
+      case 'misc':
+        return ['track_id', 'genre_tags', 'playlist_tags'];
+      default:
+        return ['track_id', 'playlist_tags', 'misc_tags'];
+    }
+  };
 
   const columns = useMemo(() => [
     {
@@ -40,7 +68,6 @@ const TableView = ({ library: { playlist, artist, tracks } }) => {
         {
           Header: 'Track ID',
           accessor: 'track_id',
-          isVisible: true,
         },
         {
           Header: 'Track Name',
@@ -57,11 +84,40 @@ const TableView = ({ library: { playlist, artist, tracks } }) => {
         {
           Header: 'Key',
           accessor: 'key',
+          editable: true,
         },
         {
-          Header: 'Tags',
-          accessor: 'tags',
+          Header: (
+            <TableTagSelector
+              setTagSelection={setTagSelection}
+              tagSelection={tagSelection}
+            />
+          ),
+          accessor: 'genre_tags',
           editable: true,
+          disableSortBy: true,
+        },
+        {
+          Header: (
+            <TableTagSelector
+              setTagSelection={setTagSelection}
+              tagSelection={tagSelection}
+            />
+          ),
+          accessor: 'playlist_tags',
+          editable: true,
+          disableSortBy: true,
+        },
+        {
+          Header: (
+            <TableTagSelector
+              setTagSelection={setTagSelection}
+              tagSelection={tagSelection}
+            />
+          ),
+          accessor: 'misc_tags',
+          editable: true,
+          disableSortBy: true,
         },
         {
           Header: 'Duration',
@@ -119,6 +175,7 @@ const TableView = ({ library: { playlist, artist, tracks } }) => {
       })}
       updateMyData={updateMyData}
       skipPageReset={skipPageReset}
+      newHiddenColumns={hiddenColumns(tagSelection)}
     />
   );
 };

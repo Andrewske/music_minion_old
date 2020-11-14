@@ -32,7 +32,7 @@ const Explore = ({
       )}
       {showTracks && <Tracks />}
       {showGenres && tracks.length !== 0 ? (
-        <Tracks />
+        <TableView />
       ) : (
         showGenres && <Genres />
       )}

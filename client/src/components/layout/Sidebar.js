@@ -128,7 +128,7 @@ const Sidebar = ({
       </li>
       <li>
         <a href='/#' onClick={(e) => handleClick(e, 'select', 'Genres')}>
-          Genres
+          Genre Tags
         </a>
       </li>
     </ul>
@@ -187,8 +187,8 @@ const Sidebar = ({
         ) : (
           <div className='sidebar-item-list'>
             {option === 'Playlists' ? <Playlists sort={sort} /> : null}
-            {option === 'Artists' ? <Artists /> : null}
-            {option === 'Genres' ? <Genres /> : null}
+            {option === 'Artists' ? <Artists sort={sort} /> : null}
+            {option === 'Genres' ? <Genres sort={sort} /> : null}
           </div>
         )}
       </nav>

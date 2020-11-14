@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { addTrackTag } from '../../actions/tags';
+import { addTrackTag, removeTrackTag } from '../../actions/tags';
 
 const EditableCell = ({
   value: initialValue,
@@ -22,19 +22,31 @@ const EditableCell = ({
 
   const onSubmit = (e) => {
     e.preventDefault();
-    let track_id = cell.row.values.track_id;
-    let tags = value.split(',').map((tag) => _.lowerCase(tag));
-    let original_tags = tracks.find((track) => track.track_id === track_id)
-      .tags;
-    let new_tags = _.difference(tags, original_tags);
-    let remove_tags = _.difference(original_tags, tags);
-    console.log(new_tags);
+    const track_id = cell.row.values.track_id;
+    const type = cell.column.id.replace('_tags', '');
+
+    const tags = value
+      .split(',')
+      .map((tag) => _.trim(_.join(_.split(_.toLower(tag), ' '), '_'), '_'));
+
+    const original_tags = tracks
+      .find((track) => track.track_id === track_id)
+      .tags.map((tag) => (tag.type === type ? tag.name : null));
+
+    console.log(tags.map((tag) => tag));
+
+    const new_tags = _.difference(tags, original_tags);
+    const remove_tags = _.compact(_.difference(original_tags, tags));
+
     new_tags.map((tag) => {
-      console.log(tag);
-      return addTrackTag({ type: 'genre', name: tag }, track_id, user_id);
+      return addTrackTag({ type: type, name: tag }, track_id, user_id);
     });
 
-    console.log(new_tags, remove_tags);
+    remove_tags.map((tag) => {
+      return removeTrackTag({ type: type, name: tag }, track_id, user_id);
+    });
+
+    console.log('done');
   };
 
   // We'll only update the external data when the input is blurred
@@ -53,7 +65,10 @@ const EditableCell = ({
 
   return (
     <form onSubmit={onSubmit}>
-      <input value={value} onChange={onChange} onBlur={onBlur} />
+      <input value={value} onChange={onChange} onBlur={onBlur} />{' '}
+      <span onClick={onSubmit}>
+        <i className='fa fa-check fa-xs submit-icon'></i>
+      </span>
     </form>
   );
 };

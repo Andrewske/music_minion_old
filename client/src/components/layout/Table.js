@@ -1,55 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTable, useSortBy } from 'react-table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import BTable from 'react-bootstrap/Table';
 import EditableCell from './EditableCell';
 
 const defaultPropGetter = () => ({});
-
-// // Create an editable cell renderer
-// const EditableCell = ({
-//   value: initialValue,
-//   row: { index },
-//   column: { id },
-//   updateMyData, // This is a custom function that we supplied to our table instance
-//   editable,
-//   cell,
-// }) => {
-//   // We need to keep and update the state of the cell normally
-//   const [value, setValue] = React.useState(initialValue);
-
-//   const onChange = (e) => {
-//     setValue(e.target.value);
-//   };
-
-//   const onSubmit = (e) => {
-//     e.preventDefault();
-//     let track_id = cell.row.values.track_id;
-//     let tags = value.split(',');
-//     let orginal_tags =
-//     console.log(tags);
-//   };
-
-//   // We'll only update the external data when the input is blurred
-//   const onBlur = () => {
-//     updateMyData(index, id, value);
-//   };
-
-//   // If the initialValue is changed externall, sync it up with our state
-//   React.useEffect(() => {
-//     setValue(initialValue);
-//   }, [initialValue]);
-
-//   if (!editable) {
-//     return `${initialValue}`;
-//   }
-
-//   return (
-//     <form onSubmit={onSubmit}>
-//       <input value={value} onChange={onChange} onBlur={onBlur} />
-//     </form>
-//   );
-// };
 
 // Set our editable cell renderer as the default Cell renderer
 const defaultColumn = {
@@ -61,18 +16,29 @@ const Table = ({
   data,
   skipPageReset,
   updateMyData,
+  newHiddenColumns,
   getCellProps = defaultPropGetter,
   getHeaderProps = defaultPropGetter,
   getColumnProps = defaultPropGetter,
   getRowProps = defaultPropGetter,
 }) => {
+  // const [hiddenColumns, setHiddenColumns] = useState([
+  //   'track_id',
+  //   'playlist_tags',
+  //   'misc_tags',
+  // ]);
+  useEffect(() => {
+    console.log(newHiddenColumns);
+  }, [newHiddenColumns]);
+
+  const editable = ['genre_tags', 'playlist_tags', 'misc_tags'];
+
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
     prepareRow,
-    setHiddenColumns,
   } = useTable(
     {
       columns,
@@ -80,8 +46,9 @@ const Table = ({
       defaultColumn,
       autoResetPage: !skipPageReset,
       updateMyData,
+      setHiddenColumns: newHiddenColumns,
       initialState: {
-        hiddenColumns: ['track_id'],
+        hiddenColumns: newHiddenColumns,
       },
     },
     useSortBy
@@ -91,8 +58,6 @@ const Table = ({
     //<div className='tableWrap'>
     <BTable
       className='tracks-table'
-      //striped
-      //bordered
       responsive
       hover
       variant='dark'
@@ -130,7 +95,7 @@ const Table = ({
                       getCellProps(cell),
                     ])}
                   >
-                    {cell.column.id === 'tags'
+                    {editable.includes(cell.column.id)
                       ? cell.render('Cell', { editable: true, cell: cell })
                       : cell.render('Cell', { editable: false })}
                   </td>

@@ -5,9 +5,9 @@ import SpotifySettings from '../settings-forms/SpotifySettings';
 
 const Settings = () => {
   return (
-    <Fragment>
+    <div className='settings-container'>
       <SpotifySettings />
-    </Fragment>
+    </div>
   );
 };
 

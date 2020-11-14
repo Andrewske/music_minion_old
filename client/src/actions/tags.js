@@ -17,9 +17,7 @@ export const addTrackTag = async (tag, track_id, user_id) => {
   }
 };
 
-export const removeTrackTag = ({ tag, track_id, user_id }) => async (
-  dispatch
-) => {
+export const removeTrackTag = async (tag, track_id, user_id) => {
   console.log('removing track tag');
   console.log(tag);
   try {
@@ -40,8 +38,7 @@ export const removeTrackTag = ({ tag, track_id, user_id }) => async (
     let res = await axios.delete('api/tag/track', config);
     console.log(res);
   } catch (err) {
-    console.log('Error deleting track tag');
-    console.error(err);
+    console.error(`Error removeTrackTag ${err}`);
   }
 };
 

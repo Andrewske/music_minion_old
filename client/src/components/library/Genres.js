@@ -7,8 +7,9 @@ import { loadUser } from '../../actions/auth';
 import ListItem from './ListItem';
 import Loader from '../layout/Loader';
 import store from '../../store';
+import _ from 'lodash';
 
-const Genres = ({ getGenres, library: { genres, loading } }) => {
+const Genres = ({ getGenres, library: { genres, loading }, sort = null }) => {
   useEffect(() => {
     async function load() {
       await store.dispatch(loadUser());
@@ -17,14 +18,30 @@ const Genres = ({ getGenres, library: { genres, loading } }) => {
     load();
   }, [getGenres]);
 
+  if (sort) {
+    genres = sort.az ? _.orderBy(genres, ['name'], ['asc']) : genres;
+    genres = sort.za ? _.orderBy(genres, ['name'], ['desc']) : genres;
+    genres = sort.most
+      ? _.orderBy(genres, (genre) => _.parseInt(genre.count), ['desc'])
+      : genres;
+    genres = sort.least
+      ? _.orderBy(genres, (genre) => _.parseInt(genre.count), ['asc'])
+      : genres;
+  }
+
   return loading ? (
     <Loader />
   ) : (
     <Fragment>
       <div className='item-list'>
         {genres &&
-          genres.map((genres) => (
-            <ListItem key={genres.tag_id} type='genre' current={genres} />
+          genres.map((genre) => (
+            <ListItem
+              key={genre.tag_id}
+              type='genre'
+              current={genre}
+              count={genre.count}
+            />
           ))}
       </div>
     </Fragment>
