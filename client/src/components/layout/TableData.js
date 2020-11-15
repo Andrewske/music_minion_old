@@ -16,7 +16,9 @@ const TableData = (tracks) => {
     }
 
     const dateFormatter = (cell) => {
-      return moment({ cell }).format('MMM-YYYY');
+      return moment(cell).format('MMM-YYYY') === 'Invalid date'
+        ? 'NaN'
+        : moment(cell).format('MMM-YYYY');
     };
 
     return {
@@ -47,7 +49,7 @@ const TableData = (tracks) => {
         ', '
       ),
       duration: audio_features ? audio_features.duration : 0,
-      added_at: dateFormatter(track.added_at),
+      release_date: dateFormatter(track.release_date),
     };
   };
 

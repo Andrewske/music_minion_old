@@ -1,58 +1,50 @@
 const { query } = require('../config/db');
 const _ = require('lodash');
-const { db } = require('../config/db-promise');
+const { db, pgp } = require('../config/db-promise');
 
 exports.addAudioFeatures = async (features) => {
   try {
-    const asyncRes = await Promise.all(
-      features.map(
-        async ({
-          danceability,
-          energy,
-          key,
-          loudness,
-          mode,
-          speechiness,
-          acousticness,
-          instrumentalness,
-          liveness,
-          valence,
-          tempo,
-          id,
-          duration_ms,
-          time_signature,
-        }) => {
-          const insertText = `
-              INSERT INTO audio_features (track_id, danceability, energy, track_key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration_ms, time_signature)
-              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-              ON CONFLICT (track_id)
-              DO UPDATE
-              SET energy = EXCLUDED.energy
-              RETURNING *`;
-          const insertValues = [
-            id,
-            danceability,
-            energy,
-            key,
-            loudness,
-            mode,
-            speechiness,
-            acousticness,
-            instrumentalness,
-            liveness,
-            valence,
-            tempo,
-            duration_ms,
-            time_signature,
-          ];
-          const res = await query(insertText, insertValues);
-          return res.rows;
-        }
-      )
-    );
-    return asyncRes;
-  } catch (e) {
-    throw e;
+    features = features.map((f) => {
+      return Object.assign(
+        {
+          track_id: f.id,
+          track_key: f.key,
+        },
+        _.omit(f, 'id', 'key')
+      );
+    });
+
+    const col = [
+      'danceability',
+      'energy',
+      'track_key',
+      'loudness',
+      'mode',
+      'speechiness',
+      'acousticness',
+      'instrumentalness',
+      'liveness',
+      'valence',
+      'tempo',
+      'track_id',
+      'duration_ms',
+      'time_signature',
+    ];
+
+    const data = features.map((f) => _.pick(f, col));
+    const cs = new pgp.helpers.ColumnSet(col, { table: 'audio_features' });
+    const query =
+      pgp.helpers.insert(data, cs) +
+      `
+    ON CONFLICT (track_id)
+    DO UPDATE
+    SET track_key = EXCLUDED.track_key
+    RETURNING *`;
+
+    return db.many(query);
+  } catch (err) {
+    console.error(`Error model/audio_features/addAudioFeatures: ${err}`);
+    return null;
   }
 };
 

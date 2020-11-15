@@ -1,33 +1,37 @@
 const { query } = require('../config/db');
+const { db, pgp } = require('../config/db-promise');
+const _ = require('lodash');
 
-exports.addPlaylists = async (playlist_info) => {
+exports.addPlaylists = async (playlist_data) => {
   try {
-    const asyncRes = await Promise.all(
-      playlist_info.map(
-        async ({ playlist_id, name, owner, img_url, size, platform }) => {
-          const insertText = `
-            INSERT INTO playlist (playlist_id, name, owner, img_url, size, platform) 
-            VALUES ($1, $2, $3, $4, $5, $6)
-            ON CONFLICT (playlist_id)
-            DO UPDATE
-            SET name = EXCLUDED.name, owner = EXCLUDED.owner, img_url = EXCLUDED.img_url, size = EXCLUDED.size, platform = EXCLUDED.platform
-            RETURNING *`;
-          const insertValues = [
-            playlist_id,
-            name,
-            owner,
-            img_url,
-            size,
-            platform,
-          ];
-          const res = await query(insertText, insertValues);
-          return res.rows;
-        }
-      )
-    );
-    return asyncRes;
-  } catch (e) {
-    throw e;
+    const columns = [
+      'playlist_id',
+      'name',
+      'owner',
+      'img_url',
+      'size',
+      'platform',
+      'snapshot_id',
+    ];
+    const data = playlist_data.map((playlist) => {
+      return _.pick(playlist, columns);
+    });
+
+    //guide to the batch insert https://stackoverflow.com/questions/37300997/multi-row-insert-with-pg-promise
+    //help with the conflict from https://github.com/vitaly-t/pg-promise/issues/245
+
+    const cs = new pgp.helpers.ColumnSet(columns, { table: 'playlist' });
+
+    const query =
+      pgp.helpers.insert(data, cs) +
+      `ON CONFLICT (playlist_id)
+      DO UPDATE
+      SET name = EXCLUDED.name, owner = EXCLUDED.owner, img_url = EXCLUDED.img_url, size = EXCLUDED.size, snapshot_id = EXCLUDED.snapshot_id 
+      RETURNING playlist_id`;
+
+    return await db.many(query);
+  } catch (err) {
+    console.error(`Error models/playlist/addPlaylists: ${err}`);
   }
 };
 

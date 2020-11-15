@@ -1,6 +1,5 @@
 const axios = require('axios');
 const { spotify } = require('../config/keys');
-
 const { getUserToken } = require('../models/user_token');
 
 // Check the Token Status
@@ -35,7 +34,7 @@ exports.updateToken = async (refresh_token) => {
     });
     return res.data.access_token;
   } catch (err) {
-    console.error(err.message);
+    console.error(`Error updateToken: ${err.message}`);
   }
 };
 
@@ -68,7 +67,7 @@ exports.getPlaylists = async (
 
     return playlists;
   } catch (err) {
-    console.error(err.message);
+    console.error(`Error getPlaylists: ${err.message}`);
   }
 };
 
@@ -103,7 +102,7 @@ exports.getPlaylistTracks = async (
 
     return tracks;
   } catch (err) {
-    console.log(err);
+    console.log(`Error getPlaylistTracks: ${err.message}`);
   }
 };
 
@@ -119,7 +118,7 @@ exports.getArtistInfo = async (artist_id, access_token) => {
     });
     return res.data;
   } catch (err) {
-    console.error(err);
+    console.error(`Error getArtistInfo: ${err}`);
   }
 };
 
@@ -136,7 +135,7 @@ exports.getAudioFeatures = async (track_ids, access_token) => {
     });
     return res.data;
   } catch (err) {
-    console.error(err);
+    console.error(`Error getAudioFeatures: ${err}`);
   }
 };
 

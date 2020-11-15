@@ -1,23 +1,29 @@
 const { query } = require('../config/db');
+const { db, pgp } = require('../config/db-promise');
+const _ = require('lodash');
 
 exports.addUserPlaylists = async (playlist_data) => {
   try {
-    const asyncRes = await Promise.all(
-      playlist_data.map(async ({ user_id, playlist_id }) => {
-        const insertText = `
-            INSERT INTO user_playlist (user_id, playlist_id) 
-            VALUES ($1, $2)
-            ON CONFLICT
-            DO NOTHING`;
-        const insertValues = [user_id, playlist_id];
-        const res = await query(insertText, insertValues);
-        return res.rows;
-      })
-    );
-    return asyncRes;
-  } catch (e) {
-    console.error('Error Inserting user_playlists');
-    throw e;
+    const columns = ['playlist_id', 'user_id'];
+
+    const data = playlist_data.map((playlist) => {
+      return _.pick(playlist, columns);
+    });
+
+    const cs = new pgp.helpers.ColumnSet(columns, {
+      table: 'user_playlist',
+    });
+
+    const query =
+      pgp.helpers.insert(data, cs) +
+      `ON CONFLICT (user_id, playlist_id) 
+      DO UPDATE 
+      SET user_playlist_id = EXCLUDED.user_playlist_id 
+      RETURNING user_playlist_id`;
+
+    return await db.many(query);
+  } catch (err) {
+    console.error(`Error models/user_playlist/addUserPlaylist: ${err}`);
   }
 };
 

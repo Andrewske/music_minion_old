@@ -14,3 +14,4 @@ const connection = {
 const pgp = require('pg-promise')(initOptions);
 
 exports.db = pgp(connection);
+exports.pgp = pgp;

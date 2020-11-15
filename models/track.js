@@ -1,24 +1,29 @@
 const { query } = require('../config/db');
+const { db, pgp } = require('../config/db-promise');
+const _ = require('lodash');
 
 exports.addTracks = async (track_info) => {
   try {
-    const asyncRes = await Promise.all(
-      track_info.map(async ({ track_id, name, popularity }) => {
-        const insertText = `
-            INSERT INTO track (track_id, name, popularity) 
-            VALUES ($1, $2, $3)
-            ON CONFLICT (track_id)
-            DO UPDATE
-            SET name = EXCLUDED.name, popularity = EXCLUDED.popularity
-            RETURNING *`;
-        const insertValues = [track_id, name, popularity];
-        const res = await query(insertText, insertValues);
-        return res.rows;
-      })
+    const col = ['track_id', 'name', 'popularity', 'release_date'];
+    const data = track_info.map((track) => _.pick(track, col));
+    const cs = new pgp.helpers.ColumnSet(col, {
+      table: 'track',
+    });
+
+    const query =
+      pgp.helpers.insert(data, cs) +
+      `
+      ON CONFLICT (track_id)
+      DO UPDATE
+      SET name = EXCLUDED.name, popularity = EXCLUDED.popularity, release_date = EXCLUDED.release_date
+      RETURNING *`;
+
+    return db.many(query);
+  } catch (err) {
+    console.error(
+      `Error model/track/addTracks: ${JSON.stringify(track_info)}, ${err}`
     );
-    return asyncRes;
-  } catch (e) {
-    throw e;
+    return null;
   }
 };
 

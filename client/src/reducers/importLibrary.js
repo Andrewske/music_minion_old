@@ -16,8 +16,10 @@ const initialState = {
   limit: null,
   owner: null,
   useLastFm: false,
+  failed_playlists: [],
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default function (state = initialState, action) {
   const { type, payload } = action;
   switch (type) {
@@ -59,7 +61,7 @@ export default function (state = initialState, action) {
         error: { ...state.error, payload },
         import_playlists: false,
         import_tracks: false,
-        importing: false,
+        importing: true,
       };
     default:
       return state;

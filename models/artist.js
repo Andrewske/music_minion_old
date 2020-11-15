@@ -1,24 +1,27 @@
 const { pool, query } = require('../config/db');
+const { db, pgp } = require('../config/db-promise');
+const _ = require('lodash');
 
 exports.addArtists = async (artists) => {
   try {
-    const asyncRes = await Promise.all(
-      artists.map(async ({ artist_id, name }) => {
-        const insertText = `
-            INSERT INTO artist (artist_id, name) 
-            VALUES ($1, $2)
-            ON CONFLICT (artist_id)
-            DO UPDATE SET name = artist.name
-            RETURNING *`;
-        const insertValues = [artist_id, name];
-        const res = await query(insertText, insertValues);
-        return res.rows[0];
-      })
-    );
-    return asyncRes;
-  } catch (e) {
-    console.error('Error Inserting user_tracks');
-    throw e;
+    const col = ['artist_id', 'name'];
+    const data = artists.map((artist) => _.pick(artist, col));
+    const cs = new pgp.helpers.ColumnSet(col, {
+      table: 'artist',
+    });
+
+    const query =
+      pgp.helpers.insert(data, cs) +
+      `
+      ON CONFLICT (artist_id)
+      DO UPDATE
+      SET name = EXCLUDED.name
+      RETURNING *`;
+
+    return db.many(query);
+  } catch (err) {
+    console.error(`Error model/artist/addArtists: ${err}`);
+    return null;
   }
 };
 

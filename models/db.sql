@@ -34,6 +34,7 @@ CREATE TABLE playlist (
     img_url TEXT,
     size INTEGER,
     platform TEXT,
+    snapshot_id TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -43,6 +44,7 @@ CREATE TABLE track (
     track_id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     popularity INTEGER,
+    release_date DATE,
     tag_sugg JSONB,
 );
 
@@ -144,7 +146,7 @@ CREATE TABLE track_tag (
     track_id TEXT NOT NULL REFERENCES track(track_id),
     user_id UUID REFERENCES users(user_id),
     tag_id BIGSERIAL NOT NULL REFERENCES tag(tag_id),
-    UNIQUE (track_id, tag_id)
+    UNIQUE (track_id, tag_id, user_ud)
 );
 
 CREATE TABLE artist_tag (

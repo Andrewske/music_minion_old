@@ -1,14 +1,13 @@
-const { query } = require('../config/db');
+const { db } = require('../config/db-promise');
 
 exports.getUserToken = async (userId, platform) => {
   try {
-    const userToken = await query(
+    return await db.one(
       `SELECT * FROM user_token
             WHERE user_id = $1 and platform = $2`,
       [userId, platform]
     );
-    return userToken.rows[0];
   } catch (err) {
-    console.error(err.message);
+    console.error(`Error getUserToken: ${err.message}`);
   }
 };

@@ -6,6 +6,7 @@ const tags = require('../../components/tags');
 const { mbApi } = require('../../config/musicBrainz');
 //const { lastfm } = require('../../config/lastfm');
 const lastFm = require('../../components/lastFm');
+const _ = require('lodash');
 
 // Model Imports
 const { getUser } = require('../../models/users');
@@ -18,6 +19,7 @@ const { addArtists, updateArtist } = require('../../models/artist');
 const { addArtistTracks } = require('../../models/artist_track');
 const { addPlaylistTracks } = require('../../models/playlist_track');
 const { addAudioFeatures } = require('../../models/audio_features');
+const { db, pgp } = require('../../config/db-promise');
 
 // ROUTES
 
@@ -28,13 +30,15 @@ router.get('/import/playlist/all', async (req, res) => {
   try {
     //Get the User info from DB
     const user = await getUser(req.user.user_id);
-    let { user_id, spotify_id } = user;
+    const { user_id, spotify_id } = user;
 
     //Check that the Spotify Access is valid then Get the users playlists
-    let access_token = await spotify.checkAuth(user_id);
-    let playlists = await spotify.getPlaylists(spotify_id, access_token);
+    const access_token = await spotify.checkAuth(user_id);
     const limit = parseInt(req.query.limit) || null;
     const owner = req.query.owner || null;
+
+    let playlists = await spotify.getPlaylists(spotify_id, access_token);
+
     if (owner === 'owner') {
       playlists = playlists.filter(
         (playlist) => playlist.owner.id === spotify_id
@@ -43,6 +47,25 @@ router.get('/import/playlist/all', async (req, res) => {
     if (limit) {
       playlists = playlists.slice(0, limit);
     }
+
+    // Get currently existing playlists and check if playlist needs to be created or updated
+    const playlist_ids = playlists.map((p) => p.id);
+    let existing_playlists = await db.any(
+      'SELECT * FROM playlist WHERE playlist_id = ANY($1::text[])',
+      [playlist_ids]
+    );
+
+    playlists = playlists.reduce((result, p) => {
+      let snapshot_id = _.find(existing_playlists, { playlist_id: p.id })
+        .snapshot_id;
+
+      if (p.snapshot_id != snapshot_id) {
+        result.push(p);
+      }
+      return result;
+    }, []);
+
+    console.log(playlists);
 
     // Format Playlist Data
     playlist_data = playlists.map((p) => ({
@@ -53,6 +76,7 @@ router.get('/import/playlist/all', async (req, res) => {
       img_url: p.images.length > 0 ? p.images[0].url : null,
       size: p.tracks.total,
       platform: 'spotify',
+      snapshot_id: p.snapshot_id,
     }));
 
     // For each playlist add the data and record to to the playlist and user_playlist models
@@ -69,7 +93,7 @@ router.get('/import/playlist/all', async (req, res) => {
       playlist_data: playlist_data,
     });
   } catch (err) {
-    console.error(err);
+    console.error(`Error spotify/import/playlist/all: ${err}`);
     res.status(500).send('Server Error');
   }
 });
@@ -81,7 +105,7 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
   try {
     // Get the User info from DB
     const user = await getUser(req.user.user_id);
-    console.log('got user');
+
     let { user_id, spotify_id } = user;
 
     // Get the playlist_id from params
@@ -89,108 +113,134 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
 
     // Check that the Spotify Access is valid then Get the users playlists
     let access_token = await spotify.checkAuth(user_id);
-    console.log('checked auth');
+
     // Get the playlist tracks from Spotify
     let tracks = await spotify.getPlaylistTracks(playlist_id, access_token);
-    console.log('got tracks');
-    const track_ids = tracks
-      .map((t) => {
-        try {
-          return t.track.id;
-        } catch (err) {
-          return null;
-        }
-      })
-      .filter((id) => id != null);
+
     // Format the track info
-    let track_info = [];
-    let artist_info = [];
-    let errors = [];
 
-    tracks.map((t, i) => {
-      try {
-        let {
-          track: {
-            id: track_id,
-            name,
-            external_ids: { isrc = null },
-            artists,
-          },
-          added_at,
-          added_by,
-          duration_ms,
-          popularity,
-        } = t;
+    if (tracks) {
+      let track_info = [];
+      let artist_info = [];
+      let errors = [];
+      tracks.map((t, i) => {
+        try {
+          let {
+            track: {
+              id: track_id,
+              name,
+              external_ids: { isrc = null },
+              artists,
+              album: { release_date },
+              popularity,
+              duration_ms,
+            },
+            added_at,
+            added_by,
+          } = t;
 
-        artists = artists.map((artist) => ({
-          user_id,
-          track_id,
-          artist_id: artist.id,
-          name: artist.name,
-        }));
-        if (track_id) {
-          track_info = [
-            ...track_info,
-            { user_id, track_id, playlist_id, name, popularity, artists },
-          ];
-          artist_info = [...artist_info, ...artists];
+          artists = artists.map((artist) => ({
+            user_id,
+            track_id,
+            artist_id: artist.id,
+            name: artist.name,
+          }));
+
+          if (track_id) {
+            track_info = [
+              ...track_info,
+              {
+                user_id,
+                track_id,
+                playlist_id,
+                name,
+                popularity,
+                artists,
+                release_date: new Date(release_date),
+                added_at,
+              },
+            ];
+            artist_info = [...artist_info, ...artists];
+          }
+        } catch (err) {
+          errors = [...errors, { map_error: { index: i, elem: t } }];
         }
-      } catch (err) {
-        errors = [...errors, { map_error: { index: i, elem: t } }];
+      });
+
+      //Get ids and filter out any duplicates
+      const track_ids = _.uniq(
+        track_info.map((t) => t.track_id || null).filter((id) => id != null)
+      );
+
+      track_info = _.uniqBy(track_info, 'track_id');
+      artist_info = _.uniqBy(artist_info, 'track_id');
+
+      const artists = _.uniqBy(
+        artist_info.map((artist) =>
+          _.pick(artist, ['user_id', 'artist_id', 'name'])
+        ),
+        'artist_id'
+      );
+
+      //res.status(200).json(tracks);
+
+      // Add tracks to the database
+      const newTracks = await addTracks(track_info);
+
+      // Add the user track record
+      const userTracks = await addUserTracks(track_info);
+
+      // Add the artists
+      const newArtists = await addArtists(artists);
+
+      // Add the artist track references
+      const newArtistTracks = await addArtistTracks(artist_info);
+
+      // Add the user artist references
+      const newUserArtists = await addUserArtists(artists);
+
+      // Add the playlist track references
+      const newPlaylistTracks = await addPlaylistTracks(track_info);
+
+      // Get the tracks audio features
+      const audioFeatures = await spotify.getAudioFeatures(
+        track_ids,
+        access_token
+      );
+      // Add Audio features to the db
+      const audio_features = await addAudioFeatures(
+        audioFeatures['audio_features']
+      );
+
+      // Add recommended lastFm tags to db
+      const useLastFm = req.query.useLastFm;
+      if (useLastFm === 'true') {
+        const tag_sugg = await lastFm.importTags({
+          tracks: track_info,
+          user_id,
+          useLastFm,
+        });
       }
-    });
 
-    // Add tracks to the database
-    const newTracks = await addTracks(track_info);
-
-    // Add the user track record
-    const userTracks = await addUserTracks(track_info);
-
-    // Add the artists
-    const newArtists = await addArtists(artist_info);
-
-    // Add the artist track references
-    const newArtistTracks = await addArtistTracks(artist_info);
-
-    // Add the user artist references
-    const newUserArtists = await addUserArtists(artist_info);
-
-    // Add the playlist track references
-    const newPlaylistTracks = await addPlaylistTracks(track_info);
-
-    // Get the tracks audio features
-    const audioFeatures = await spotify.getAudioFeatures(
-      track_ids,
-      access_token
-    );
-    // Add Audio features to the db
-    const audio_features = await addAudioFeatures(
-      audioFeatures['audio_features']
-    );
-
-    // Add recommended lastFm tags to db
-    const useLastFm = req.query.useLastFm;
-    const tag_sugg = await lastFm.importTags({
-      tracks: track_info,
-      user_id,
-      useLastFm,
-    });
-
-    res.status(200).json({
-      total_tracks: tracks.length,
-      total_artists: artist_info.length,
-      new_tracks: newTracks.length,
-      user_tracks: userTracks.length,
-      new_artists: newArtists.length,
-      new_artist_tracks: newArtistTracks.length,
-      new_user_artists: newUserArtists.length,
-      new_playlist_tracks: newPlaylistTracks.length,
-      new_audio_features: audio_features.length,
-      errors,
-    });
-    console.log('We made it here?');
+      res.status(200).json({
+        total_tracks: tracks.length,
+        total_artists: artists.length,
+        new_tracks: newTracks.length,
+        user_tracks: userTracks.length,
+        new_artists: newArtists.length,
+        new_artist_tracks: newArtistTracks.length,
+        new_user_artists: newUserArtists.length,
+        new_playlist_tracks: newPlaylistTracks.length,
+        new_audio_features: audio_features.length,
+        errors,
+      });
+    } else {
+      res.status(200).json({
+        failed_playlist: playlist_id,
+      });
+    }
   } catch (err) {
-    console.error(err);
+    console.error(`Error with playlist track import ${err}`);
     res.status(500).send(err);
   }
 });

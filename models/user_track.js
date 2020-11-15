@@ -1,24 +1,27 @@
 const { query } = require('../config/db');
+const { db, pgp } = require('../config/db-promise');
+const _ = require('lodash');
 
 exports.addUserTracks = async (track_info) => {
   try {
-    const asyncRes = await Promise.all(
-      track_info.map(async ({ user_id, track_id }) => {
-        const insertText = `
-            INSERT INTO user_track (user_id, track_id) 
-            VALUES ($1, $2)
-            ON CONFLICT
-            DO NOTHING`;
-        const insertValues = [user_id, track_id];
-        const res = await query(insertText, insertValues);
-        return res.rows;
-      })
-    );
+    const col = ['user_id', 'track_id', 'added_at'];
+    const data = track_info.map((track) => _.pick(track, col));
+    const cs = new pgp.helpers.ColumnSet(col, {
+      table: 'user_track',
+    });
 
-    return asyncRes;
-  } catch (e) {
-    console.error('Error Inserting user_tracks');
-    throw e;
+    const query =
+      pgp.helpers.insert(data, cs) +
+      `
+      ON CONFLICT (user_id, track_id)
+      DO UPDATE
+      SET added_at = EXCLUDED.added_at
+      RETURNING *`;
+
+    return db.many(query);
+  } catch (err) {
+    console.error(`Error model/track/addUserTracks: ${err}`);
+    return null;
   }
 };
 

@@ -124,8 +124,8 @@ const TableView = ({ library: { playlist, artist, genre, tracks } }) => {
           accessor: 'duration',
         },
         {
-          Header: 'Added At',
-          accessor: 'added_at',
+          Header: 'Released',
+          accessor: 'release_date',
         },
       ],
     },

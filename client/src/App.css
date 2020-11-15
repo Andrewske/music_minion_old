@@ -164,11 +164,13 @@ img {
 }
 
 .alert {
-  padding: 0.8rem;
-  margin: 1rem 0;
+  width: auto;
+  margin-left: 280px;
+  margin-bottom: 64px;
   opacity: 0.9;
   background: var(--light-color);
   color: #333;
+  position: fixed;
 }
 
 .btn-primary,
