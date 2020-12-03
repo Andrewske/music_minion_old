@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 exports.addTracks = async (track_info) => {
   try {
-    const col = ['track_id', 'name', 'popularity', 'release_date'];
+    const col = ['track_id', 'name', 'popularity', 'release_date', 'isrc'];
     const data = track_info.map((track) => _.pick(track, col));
     const cs = new pgp.helpers.ColumnSet(col, {
       table: 'track',
@@ -15,7 +15,7 @@ exports.addTracks = async (track_info) => {
       `
       ON CONFLICT (track_id)
       DO UPDATE
-      SET name = EXCLUDED.name, popularity = EXCLUDED.popularity, release_date = EXCLUDED.release_date
+      SET isrc = EXCLUDED.isrc, popularity = EXCLUDED.popularity, release_date = EXCLUDED.release_date
       RETURNING *`;
 
     return db.many(query);

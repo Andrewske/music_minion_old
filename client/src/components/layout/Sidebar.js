@@ -136,62 +136,64 @@ const Sidebar = ({
 
   return (
     <Fragment>
-      <nav className={isAuthenticated ? 'sidebar' : 'hidden'}>
-        <span className='sidebar-menu'>
-          <span
-            className='sidebar-menu-select'
-            onMouseOver={() => setOpen({ ...open, filter: true })}
-            onMouseLeave={() => setOpen({ ...open, filter: false })}
-          >
-            <FilterIcon
-              className='svg filter-icon playlists'
-              ref={filterRef}
-              onClick={ShowFilter}
-            />
-            <SlideDown className='filter-slidedown overlay'>
-              {open.filter ? filterItems : null}
-            </SlideDown>
-          </span>
-          <span
-            className='sidebar-menu-select'
-            onMouseOver={() => setOpen({ ...open, select: true })}
-            onMouseLeave={() => setOpen({ ...open, select: false })}
-          >
-            <p
-              className={`sidebar-menu-title filter-btn ${option.toLowerCase()}`}
+      {isAuthenticated && (
+        <nav className={'sidebar'}>
+          {/* isAuthenticated ? 'sidebar' : 'hidden'}> */}
+          <span className='sidebar-menu'>
+            <span
+              className='sidebar-menu-select'
+              onMouseOver={() => setOpen({ ...open, filter: true })}
+              onMouseLeave={() => setOpen({ ...open, filter: false })}
             >
-              {option}
-            </p>
-            <SlideDown className='select-slidedown overlay'>
-              {open.select ? selectItems : null}
-            </SlideDown>
+              <FilterIcon
+                className='svg filter-icon playlists'
+                ref={filterRef}
+                onClick={ShowFilter}
+              />
+              <SlideDown className='filter-slidedown overlay'>
+                {open.filter ? filterItems : null}
+              </SlideDown>
+            </span>
+            <span
+              className='sidebar-menu-select'
+              onMouseOver={() => setOpen({ ...open, select: true })}
+              onMouseLeave={() => setOpen({ ...open, select: false })}
+            >
+              <p
+                className={`sidebar-menu-title filter-btn ${option.toLowerCase()}`}
+              >
+                {option}
+              </p>
+              <SlideDown className='select-slidedown overlay'>
+                {open.select ? selectItems : null}
+              </SlideDown>
+            </span>
+            <span
+              className='sidebar-menu-select'
+              onMouseOver={() => setOpen({ ...open, sort: true })}
+              onMouseLeave={() => setOpen({ ...open, sort: false })}
+            >
+              <SortIcon
+                className='svg filter-icon genres'
+                ref={sortRef}
+                onClick={ShowSort}
+              ></SortIcon>
+              <SlideDown className='sort-slidedown overlay'>
+                {open.sort ? sortItems : null}
+              </SlideDown>
+            </span>
           </span>
-          <span
-            className='sidebar-menu-select'
-            onMouseOver={() => setOpen({ ...open, sort: true })}
-            onMouseLeave={() => setOpen({ ...open, sort: false })}
-          >
-            <SortIcon
-              className='svg filter-icon genres'
-              ref={sortRef}
-              onClick={ShowSort}
-            ></SortIcon>
-            <SlideDown className='sort-slidedown overlay'>
-              {open.sort ? sortItems : null}
-            </SlideDown>
-          </span>
-        </span>
-
-        {loading ? (
-          <Loader />
-        ) : (
-          <div className='sidebar-item-list'>
-            {option === 'Playlists' ? <Playlists sort={sort} /> : null}
-            {option === 'Artists' ? <Artists sort={sort} /> : null}
-            {option === 'Genres' ? <Genres sort={sort} /> : null}
-          </div>
-        )}
-      </nav>
+          {loading ? (
+            <Loader />
+          ) : (
+            <div className='sidebar-item-list'>
+              {option === 'Playlists' ? <Playlists sort={sort} /> : null}
+              {option === 'Artists' ? <Artists sort={sort} /> : null}
+              {option === 'Genres' ? <Genres sort={sort} /> : null}
+            </div>
+          )}
+        </nav>
+      )}
     </Fragment>
   );
 };

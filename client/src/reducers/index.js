@@ -4,6 +4,7 @@ import auth from './auth';
 import playlist from './playlist';
 import library from './library';
 import filter from './filter';
+import player from './player';
 import importLibrary from './importLibrary';
 import { LOGOUT } from '../actions/types';
 
@@ -14,6 +15,7 @@ export const appReducer = combineReducers({
   playlist,
   library,
   filter,
+  player,
 });
 
 const rootReducer = (state, action) => {

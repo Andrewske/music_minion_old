@@ -1,5 +1,5 @@
 import convertKey from './convertKey';
-import convertDuration from './convertDuration';
+import convertDuration from '../reducers/convertDuration';
 import convertFeatureGraph from './convertFeatureGraph';
 
 const convertAudioFeatures = (features) => {

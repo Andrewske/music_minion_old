@@ -140,3 +140,21 @@ exports.getAudioFeatures = async (track_ids, access_token) => {
 };
 
 // Get Audio Analysis https://api.spotify.com/v1/audio-analysis/{id} https://developer.spotify.com/documentation/web-api/reference-beta/#category-tracks
+
+exports.getAudioAnalysis = async (track_id, access_token) => {
+  console.log(`Track Id: ${track_id}`);
+  try {
+    const res = await axios({
+      method: 'get',
+      url: `https://api.spotify.com/v1/audio-analysis/${track_id}`,
+      params: { access_token },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    return res.data;
+  } catch (err) {
+    console.error(`Error getAudioAnalysis: ${err}`);
+    return null;
+  }
+};

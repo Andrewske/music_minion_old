@@ -7,6 +7,9 @@ const { mbApi } = require('../../config/musicBrainz');
 //const { lastfm } = require('../../config/lastfm');
 const lastFm = require('../../components/lastFm');
 const _ = require('lodash');
+const keys = require('../../config/keys');
+const axios = require('axios');
+const qs = require('querystring');
 
 // Model Imports
 const { getUser } = require('../../models/users');
@@ -50,22 +53,20 @@ router.get('/import/playlist/all', async (req, res) => {
 
     // Get currently existing playlists and check if playlist needs to be created or updated
     const playlist_ids = playlists.map((p) => p.id);
-    let existing_playlists = await db.any(
-      'SELECT * FROM playlist WHERE playlist_id = ANY($1::text[])',
-      [playlist_ids]
-    );
+    // let existing_playlists = await db.any(
+    //   'SELECT * FROM playlist WHERE playlist_id = ANY($1::text[])',
+    //   [playlist_ids]
+    // );
 
-    playlists = playlists.reduce((result, p) => {
-      let snapshot_id = _.find(existing_playlists, { playlist_id: p.id })
-        .snapshot_id;
+    // playlists = playlists.reduce((result, p) => {
+    //   let snapshot_id = _.find(existing_playlists, { playlist_id: p.id })
+    //     .snapshot_id;
 
-      if (p.snapshot_id != snapshot_id) {
-        result.push(p);
-      }
-      return result;
-    }, []);
-
-    console.log(playlists);
+    //   if (p.snapshot_id != snapshot_id) {
+    //     result.push(p);
+    //   }
+    //   return result;
+    // }, []);
 
     // Format Playlist Data
     playlist_data = playlists.map((p) => ({
@@ -104,12 +105,15 @@ router.get('/import/playlist/all', async (req, res) => {
 router.get('/import/playlist/track/:playlist_id', async (req, res) => {
   try {
     // Get the User info from DB
-    const user = await getUser(req.user.user_id);
+    // const user = await getUser(req.user.user_id);
 
-    let { user_id, spotify_id } = user;
+    // let { user_id, spotify_id } = user;
+
+    const user_id = req.user.user_id;
 
     // Get the playlist_id from params
     const playlist_id = req.params.playlist_id;
+    console.log(playlist_id);
 
     // Check that the Spotify Access is valid then Get the users playlists
     let access_token = await spotify.checkAuth(user_id);
@@ -158,6 +162,7 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
                 artists,
                 release_date: new Date(release_date),
                 added_at,
+                isrc,
               },
             ];
             artist_info = [...artist_info, ...artists];
@@ -182,7 +187,9 @@ router.get('/import/playlist/track/:playlist_id', async (req, res) => {
         'artist_id'
       );
 
-      //res.status(200).json(tracks);
+      //console.log(result);
+
+      //res.status(200).json(result);
 
       // Add tracks to the database
       const newTracks = await addTracks(track_info);
@@ -290,6 +297,128 @@ router.get('/import/artist/:artist_id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send(err);
+  }
+});
+
+router.get('/token', async (req, res) => {
+  console.log('Token route hit');
+  const user_id = req.user.user_id;
+  try {
+    const {
+      access_token,
+      updated_at,
+      expires_in,
+    } = await db.one(
+      `SELECT * FROM user_token WHERE user_id = $1 AND platform = 'spotify'`,
+      [user_id]
+    );
+    let t = new Date(updated_at);
+    const expires_at = t.getTime() + parseInt(expires_in) * 1000;
+
+    res.status(200).json({ access_token, expires_at });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+router.get('/token/refresh', async (req, res) => {
+  const user_id = req.user.user_id;
+  const { clientID, clientSecret } = keys.spotify;
+
+  try {
+    const {
+      refresh_token,
+    } = await db.one(
+      `SELECT * FROM user_token WHERE user_id = $1 AND platform = 'spotify'`,
+      [user_id]
+    );
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization:
+          'Basic ' +
+          Buffer.from(`${clientID}:${clientSecret}`).toString('base64'),
+      },
+    };
+
+    const body = qs.stringify({
+      grant_type: 'refresh_token',
+      refresh_token: refresh_token,
+    });
+
+    const result = await axios.post(
+      'https://accounts.spotify.com/api/token',
+      body,
+      config
+    );
+
+    const { access_token, expires_in } = result.data;
+    const updated_at = new Date(Date.now());
+    const data = { user_id, access_token, expires_in, updated_at };
+    const condition = pgp.as.format(' WHERE user_id = ${user_id}', data);
+
+    let query =
+      pgp.helpers.update(
+        data,
+        ['access_token', 'expires_in', 'updated_at'],
+        'user_token'
+      ) +
+      condition +
+      ` AND platform = 'spotify' RETURNING *`;
+
+    const query_res = await db.one(query);
+
+    res.status(200).send(query_res);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err);
+  }
+});
+
+router.get('/audio_analysis/:track_id', async (req, res) => {
+  console.log('Getting Audio Analysis');
+  const user_id = req.user.user_id;
+
+  // Get the playlist_id from params
+  const track_id = req.params.track_id;
+
+  // Check that the Spotify Access is valid then Get the users playlists
+  const access_token = await spotify.checkAuth(user_id);
+
+  const data = await spotify.getAudioAnalysis(track_id, access_token);
+
+  if (data) {
+    const duration = data.track.duration;
+
+    const segments = data.segments.map((segment) => {
+      let loudness = segment.loudness_max;
+
+      return {
+        start: segment.start / duration,
+        duration: segment.duration / duration,
+        loudness: 1 - Math.min(Math.max(loudness, -35), 0) / -35,
+      };
+    });
+
+    const min = Math.min(...segments.map((segment) => segment.loudness));
+    const max = Math.max(...segments.map((segment) => segment.loudness));
+
+    let levels = [];
+
+    for (let i = 0.0; i < 1; i += 0.001) {
+      let s = segments.find((segment) => {
+        return i <= segment.start + segment.duration;
+      });
+
+      let loudness = Math.round((s.loudness / max) * 100) / 100;
+
+      levels.push(loudness);
+    }
+
+    res.status(200).send(levels);
+  } else {
+    res.status(500).json({ msg: 'No data available' });
   }
 });
 

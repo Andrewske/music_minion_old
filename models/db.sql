@@ -45,6 +45,7 @@ CREATE TABLE track (
     name TEXT NOT NULL,
     popularity INTEGER,
     release_date DATE,
+    isrc TEXT,
     tag_sugg JSONB,
 );
 

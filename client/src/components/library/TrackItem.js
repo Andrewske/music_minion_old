@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import AudioFeatures from './AudioFeatures';
 import Tags from '../tag/Tags';
-import convertDuration from '../../utils/convertDuration';
+import convertDuration from '../../reducers/convertDuration';
 import convertKey from '../../utils/convertKey';
 const _ = require('lodash');
 

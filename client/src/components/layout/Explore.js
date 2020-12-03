@@ -7,6 +7,7 @@ import Tracks from '../library/Tracks';
 import Genres from '../library/Genres';
 import TableView from '../layout/TableView';
 import Filters from '../filter/Filters';
+import PlayerBar from '../player/PlayerBar';
 
 const Explore = ({
   tracks,
@@ -16,7 +17,7 @@ const Explore = ({
   showGenres,
 }) => {
   return (
-    <Fragment>
+    <div className='explore-container'>
       {/* <Filters /> */}
 
       {showPlaylists && tracks.length !== 0 ? (
@@ -36,7 +37,8 @@ const Explore = ({
       ) : (
         showGenres && <Genres />
       )}
-    </Fragment>
+      <PlayerBar />
+    </div>
   );
 };
 
